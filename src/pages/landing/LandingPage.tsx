@@ -111,7 +111,7 @@ export const LandingPage: React.FC = () => {
         }}>
           Professional invoices made for businesses that sell through WhatsApp. Design, download, and send clean PDF receipts to your customers in under 30 seconds.
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-sm)' }}>
+        <div className="landing-hero-actions" style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
           <button 
             className="btn btn-primary"
             onClick={() => window.location.hash = '#signup'}
@@ -333,7 +333,7 @@ export const LandingPage: React.FC = () => {
           Built For Speed and Professionalism
         </h2>
         <p style={{ textAlign: 'center', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto var(--space-xl) auto' }}>
-          Everything you need to send invoices and build creditability with customers.
+          Everything you need to send invoices and build credibility with customers.
         </p>
 
         <div className="landing-features-grid">

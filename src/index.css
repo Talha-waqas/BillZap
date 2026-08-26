@@ -1008,6 +1008,10 @@ select.form-control {
   padding: var(--space-lg);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .feature-box:hover {
@@ -1036,6 +1040,8 @@ select.form-control {
   padding: var(--space-xl);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   position: relative;
   transition: all var(--transition-fast);
 }
@@ -1059,10 +1065,13 @@ select.form-control {
 
 .pricing-features-list {
   list-style: none;
-  margin: var(--space-lg) 0;
+  margin: var(--space-lg) auto;
+  max-width: 260px;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  text-align: left;
 }
 
 .pricing-features-list li {
@@ -1125,6 +1134,20 @@ select.form-control {
 }
 
 @media (max-width: 600px) {
+  /* Hero buttons vertical stack alignment */
+  .landing-hero-actions {
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+  .landing-hero-actions > button, 
+  .landing-hero-actions > a {
+    width: 100% !important;
+    max-width: 320px !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
   /* Landing page header navigation links spacing & visibility */
   .landing-navbar {
     padding: 0 var(--space-md);

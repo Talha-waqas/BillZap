@@ -1280,3 +1280,206 @@ select.form-control {
   width: 24px;
 }
 
+/* =========================================================================
+   10. Premium Luxury Hero Section Styles
+   ========================================================================= */
+.luxury-hero-section {
+  position: relative;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  padding: 8rem 2rem 5rem 2rem;
+  background: radial-gradient(circle at 15% 25%, rgba(16, 185, 129, 0.06) 0%, transparent 45%),
+              radial-gradient(circle at 85% 75%, rgba(59, 130, 246, 0.04) 0%, transparent 45%);
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.luxury-hero-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: var(--space-2xl);
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 968px) {
+  .luxury-hero-section {
+    padding: 7rem 1rem 4rem 1rem;
+    text-align: center;
+  }
+  .luxury-hero-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+}
+
+.luxury-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--color-primary);
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-round);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.05);
+}
+
+.luxury-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin-bottom: var(--space-md);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.luxury-desc {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-xl);
+  max-width: 580px;
+}
+
+@media (max-width: 968px) {
+  .luxury-desc {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Floating Mockup Card */
+.hero-mockup-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.hero-mockup-card {
+  background: rgba(18, 18, 20, 0.6);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  width: 100%;
+  max-width: 380px;
+  box-shadow: var(--shadow-lg), 0 20px 40px rgba(0,0,0,0.5);
+  animation: floatCard 6s ease-in-out infinite;
+  position: relative;
+  text-align: left;
+}
+
+.hero-mockup-badge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: #10b981;
+  color: #09090b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-round);
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+@keyframes floatCard {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(1.5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+/* Float mini features badges */
+.hero-float-badge {
+  position: absolute;
+  background: rgba(18, 18, 20, 0.75);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(8px);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow-md);
+  z-index: 20;
+}
+
+.hero-float-badge-1 {
+  top: 10%;
+  left: -20px;
+  animation: floatBadge1 5s ease-in-out infinite;
+}
+
+.hero-float-badge-2 {
+  bottom: 15%;
+  right: -20px;
+  animation: floatBadge2 7s ease-in-out infinite;
+}
+
+@keyframes floatBadge1 {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes floatBadge2 {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Stats Row */
+.hero-stats-row {
+  display: flex;
+  gap: var(--space-xl);
+  margin-top: var(--space-2xl);
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-lg);
+}
+
+@media (max-width: 968px) {
+  .hero-stats-row {
+    justify-content: center;
+  }
+}
+
+.hero-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-stat-val {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: var(--font-heading);
+}
+
+.hero-stat-lbl {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+
+

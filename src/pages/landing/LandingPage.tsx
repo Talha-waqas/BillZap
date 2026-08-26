@@ -118,40 +118,122 @@ export const LandingPage: React.FC = () => {
         </div>
       )}
 
-      {/* Hero Section */}
-      <section className="landing-hero" id="hero">
-        <span className="landing-badge">Fast & Mobile-First</span>
-        <h1 style={{ 
-          fontSize: 'clamp(2.5rem, 5vw, 4rem)', 
-          fontFamily: 'var(--font-heading)', 
-          fontWeight: 700,
-          lineHeight: 1.1,
-          letterSpacing: '-0.02em',
-          marginBottom: 'var(--space-md)'
-        }}>
-          Create. Download. <span style={{ color: 'var(--color-primary)' }}>Send.</span>
-        </h1>
-        <p style={{ 
-          fontSize: 'clamp(1rem, 2vw, 1.25rem)', 
-          color: 'var(--text-secondary)',
-          maxWidth: '650px',
-          margin: '0 auto var(--space-xl) auto',
-          lineHeight: 1.5
-        }}>
-          Professional invoices made for businesses that sell through WhatsApp. Design, download, and send clean PDF receipts to your customers in under 30 seconds.
-        </p>
-        <div className="landing-hero-actions" style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
-          <button 
-            className="btn btn-primary"
-            onClick={() => window.location.hash = '#signup'}
-            style={{ padding: '0.8rem 1.6rem', fontSize: '1rem' }}
-          >
-            <span>Create Your First Invoice</span>
-            <ArrowRight size={18} />
-          </button>
-          <a href="#demo" className="btn btn-outline" style={{ padding: '0.8rem 1.6rem', fontSize: '1rem' }}>
-            Try Live Demo
-          </a>
+      {/* Premium Luxury Hero Section */}
+      <section className="luxury-hero-section" id="hero">
+        <div className="luxury-hero-grid">
+          
+          {/* Left Column: Copy & Actions */}
+          <div style={{ textAlign: 'left' }}>
+            <span className="luxury-badge">
+              🇵🇰 Pakistan's No. 1 WhatsApp Billing Tool
+            </span>
+            <h1 className="luxury-title">
+              Create Invoices.<br />
+              Share on WhatsApp.<br />
+              <span className="text-gradient">Get Paid Instantly.</span>
+            </h1>
+            <p className="luxury-desc">
+              High-end invoice maker built specifically for freelancers, boutique owners, and retail brands. Generate professional PDFs complete with logo, and send them directly via click-to-chat link in under 30 seconds.
+            </p>
+            
+            <div className="landing-hero-actions" style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
+              <button 
+                className="btn btn-primary"
+                onClick={() => window.location.hash = '#signup'}
+                style={{ padding: '0.8rem 1.8rem', fontSize: '1rem', boxShadow: 'var(--shadow-glow)' }}
+              >
+                <span>Create Your First Invoice</span>
+                <ArrowRight size={18} />
+              </button>
+              <a 
+                href="#demo" 
+                className="btn btn-outline" 
+                style={{ padding: '0.8rem 1.8rem', fontSize: '1rem', backgroundColor: 'rgba(255,255,255,0.02)' }}
+              >
+                Try Live Demo
+              </a>
+            </div>
+
+            {/* Social Proof Stats */}
+            <div className="hero-stats-row">
+              <div className="hero-stat-item">
+                <span className="hero-stat-val">10,000+</span>
+                <span className="hero-stat-lbl">Invoices Generated</span>
+              </div>
+              <div className="hero-stat-item">
+                <span className="hero-stat-val">4.9/5</span>
+                <span className="hero-stat-lbl">Sellers Rating</span>
+              </div>
+              <div className="hero-stat-item">
+                <span className="hero-stat-val">Zero</span>
+                <span className="hero-stat-lbl">Setup Required</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Floating Interactive Mockup Card */}
+          <div className="hero-mockup-wrapper">
+            <div className="hero-float-badge hero-float-badge-1">
+              <Zap size={14} style={{ color: 'var(--color-primary)' }} />
+              <span>20-Second Billing</span>
+            </div>
+            
+            <div className="hero-mockup-card">
+              <div className="hero-mockup-badge">PAID</div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', color: '#ffffff', fontFamily: 'var(--font-heading)', margin: 0 }}>NØRTH Clothing</h4>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>INV-2026-001</span>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Date</span>
+                  <div style={{ fontSize: '0.8rem', color: '#ffffff', fontWeight: 500 }}>{new Date().toLocaleDateString()}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', marginBottom: 'var(--space-md)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Premium Leather Jacket × 1</span>
+                  <span style={{ color: '#ffffff', fontWeight: 600 }}>Rs. 8,500</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Classic Cap × 2</span>
+                  <span style={{ color: '#ffffff', fontWeight: 600 }}>Rs. 2,400</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', borderTop: '1px dashed var(--border-color)', paddingTop: 'var(--space-xs)', marginTop: '4px' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Discount</span>
+                  <span style={{ color: 'var(--color-danger)', fontWeight: 600 }}>-Rs. 900</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-md)' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Grand Total</span>
+                <span style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-primary)' }}>Rs. 10,000</span>
+              </div>
+
+              <div style={{ 
+                marginTop: 'var(--space-md)', 
+                backgroundColor: 'rgba(16, 185, 129, 0.05)', 
+                border: '1px dashed rgba(16, 185, 129, 0.2)', 
+                borderRadius: 'var(--radius-md)', 
+                padding: 'var(--space-sm)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                fontSize: '0.75rem',
+                color: 'var(--text-secondary)'
+              }}>
+                <div style={{ width: '6px', height: '6px', backgroundColor: '#10b981', borderRadius: '50%' }} />
+                <span>Easypaisa wallet payment receipt pre-filled</span>
+              </div>
+            </div>
+
+            <div className="hero-float-badge hero-float-badge-2">
+              <span>🇵🇰 Local Wallets Support</span>
+            </div>
+          </div>
+
         </div>
       </section>
 

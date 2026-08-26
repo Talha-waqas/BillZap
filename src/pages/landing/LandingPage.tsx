@@ -238,7 +238,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="landing-section" style={{ borderTop: '1px solid var(--border-color)' }}>
+      <section className="landing-section">
         <h2 style={{ 
           textAlign: 'center', 
           fontFamily: 'var(--font-heading)', 

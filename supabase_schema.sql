@@ -274,3 +274,20 @@ $$ language plpgsql security definer;
 create or replace trigger tr_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- =========================================================================
+-- ADMIN POLICIES: Allow whitelisted admin emails to view/update records
+-- =========================================================================
+create policy "Admins can view all subscriptions"
+  on public.subscriptions for select
+  using ((auth.jwt() ->> 'email') in ('talhawaqasofficial@gmail.com', 'talha.dev@nayapay', 'admin@billzap.com'));
+
+create policy "Admins can update all subscriptions"
+  on public.subscriptions for update
+  using ((auth.jwt() ->> 'email') in ('talhawaqasofficial@gmail.com', 'talha.dev@nayapay', 'admin@billzap.com'))
+  with check ((auth.jwt() ->> 'email') in ('talhawaqasofficial@gmail.com', 'talha.dev@nayapay', 'admin@billzap.com'));
+
+create policy "Admins can view all businesses"
+  on public.businesses for select
+  using ((auth.jwt() ->> 'email') in ('talhawaqasofficial@gmail.com', 'talha.dev@nayapay', 'admin@billzap.com'));
+

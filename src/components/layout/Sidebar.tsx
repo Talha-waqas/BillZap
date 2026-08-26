@@ -6,7 +6,8 @@ import {
   Settings as SettingsIcon, 
   CreditCard, 
   LogOut,
-  Zap
+  Zap,
+  ShieldAlert
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase/client';
 
@@ -17,6 +18,7 @@ interface SidebarProps {
   onNavigate: (path: string) => void;
   isOpen: boolean;
   onClose: () => void;
+  isAdmin?: boolean;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -25,7 +27,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   userName,
   onNavigate,
   isOpen,
-  onClose
+  onClose,
+  isAdmin = false
 }) => {
   const navItems = [
     { label: 'Dashboard', path: 'dashboard', icon: <LayoutDashboard size={18} /> },
@@ -34,6 +37,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: 'Settings', path: 'settings', icon: <SettingsIcon size={18} /> },
     { label: 'Billing', path: 'billing', icon: <CreditCard size={18} /> },
   ];
+
+  if (isAdmin) {
+    navItems.push({ label: 'Admin Panel', path: 'admin', icon: <ShieldAlert size={18} /> });
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

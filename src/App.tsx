@@ -21,6 +21,9 @@ import { CustomersPage } from './pages/customers/CustomersPage';
 import { CustomerDetailPage } from './pages/customers/CustomerDetailPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
 import { BillingPage } from './pages/billing/BillingPage';
+import { AdminPage } from './pages/admin/AdminPage';
+
+export const ADMIN_EMAILS = ['talhawaqasofficial@gmail.com', 'talha.dev@nayapay', 'admin@billzap.com'];
 
 // Simple Toast Notification model
 interface Toast {
@@ -44,7 +47,8 @@ type Route =
   | { name: 'customers' }
   | { name: 'customer-detail'; id: string }
   | { name: 'settings' }
-  | { name: 'billing' };
+  | { name: 'billing' }
+  | { name: 'admin' };
 
 function parseHash(hash: string): Route {
   const cleanHash = hash.replace(/^#/, '');
@@ -66,6 +70,7 @@ function parseHash(hash: string): Route {
     case 'customer-detail': return { name: 'customer-detail', id };
     case 'settings': return { name: 'settings' };
     case 'billing': return { name: 'billing' };
+    case 'admin': return { name: 'admin' };
     default: return { name: 'landing' };
   }
 }
@@ -168,6 +173,8 @@ function App() {
     if (isAppLoading) return;
 
     const isAuthRoute = ['landing', 'login', 'signup', 'forgot-password'].includes(route.name);
+    const userEmailVal = session?.user?.email || '';
+    const isAdmin = ADMIN_EMAILS.includes(userEmailVal);
 
     if (session) {
       // User is logged in
@@ -180,6 +187,10 @@ function App() {
         // Onboarding complete
         if (isAuthRoute || route.name === 'onboarding') {
           // Prevent access to public auth pages if already logged in -> Go Dashboard
+          window.location.hash = '#dashboard';
+        }
+        // Protect Admin Route
+        if (route.name === 'admin' && !isAdmin) {
           window.location.hash = '#dashboard';
         }
       }
@@ -255,6 +266,7 @@ function App() {
             onNavigate={handleNavigate}
             isOpen={isMobileSidebarOpen}
             onClose={() => setIsMobileSidebarOpen(false)}
+            isAdmin={ADMIN_EMAILS.includes(userEmail)}
           />
         )}
 
@@ -365,6 +377,10 @@ function App() {
                 onSubscriptionUpdate={(updated) => setSubscription(updated)}
                 onToast={triggerToast}
               />
+            )}
+
+            {route.name === 'admin' && business && ADMIN_EMAILS.includes(userEmail) && (
+              <AdminPage onToast={triggerToast} />
             )}
           </main>
         </div>

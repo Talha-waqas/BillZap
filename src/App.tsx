@@ -233,7 +233,7 @@ function App() {
   }
 
   // Check if layout needs sidebar
-  const showSidebar = session && business && !['landing', 'login', 'signup', 'forgot-password', 'onboarding'].includes(route.name);
+  const showSidebar = session && business && !['landing', 'login', 'signup', 'forgot-password', 'onboarding', 'admin'].includes(route.name);
 
   // Dynamic header updates
   const getPageTitle = (): string => {

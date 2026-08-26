@@ -105,34 +105,50 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast }) => {
   }
 
   return (
-    <div className="main-content">
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem var(--space-md)' }}>
       
       {/* Header */}
-      <div style={{ marginBottom: 'var(--space-xl)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ marginBottom: 'var(--space-xl)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-md)' }}>
         <div>
           <h1 style={{ fontSize: '1.75rem', marginBottom: '4px' }}>Admin Panel</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Manage user subscriptions and inspect system registrations.
           </p>
         </div>
-        <button 
-          onClick={loadAdminData}
-          style={{ 
-            background: 'rgba(255,255,255,0.05)', 
-            border: '1px solid var(--border-color)', 
-            color: 'var(--text-primary)', 
-            padding: 'var(--space-xs) var(--space-sm)',
-            borderRadius: 'var(--radius-md)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            fontSize: '0.85rem'
-          }}
-        >
-          <RefreshCw size={14} />
-          <span>Refresh Data</span>
-        </button>
+        <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+          <button 
+            onClick={() => window.location.hash = '#dashboard'}
+            style={{ 
+              background: 'transparent', 
+              border: '1px solid var(--border-color)', 
+              color: 'var(--text-secondary)', 
+              padding: 'var(--space-xs) var(--space-md)',
+              borderRadius: 'var(--radius-md)',
+              cursor: 'pointer',
+              fontSize: '0.85rem'
+            }}
+          >
+            Back to Retail App
+          </button>
+          <button 
+            onClick={loadAdminData}
+            style={{ 
+              background: 'rgba(255,255,255,0.05)', 
+              border: '1px solid var(--border-color)', 
+              color: 'var(--text-primary)', 
+              padding: 'var(--space-xs) var(--space-sm)',
+              borderRadius: 'var(--radius-md)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '0.85rem'
+            }}
+          >
+            <RefreshCw size={14} />
+            <span>Refresh Data</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats Scoreboard */}

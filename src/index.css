@@ -1192,3 +1192,91 @@ select.form-control {
     padding: 1.5rem var(--space-sm) !important;
   }
 }
+
+/* =========================================================================
+   9. Premium Testimonials Slider Section
+   ========================================================================= */
+.testimonial-slider-section {
+  position: relative;
+  background: radial-gradient(circle at 10% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 60%);
+  overflow: hidden;
+  padding: 6rem 2rem;
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+}
+
+.testimonial-container {
+  max-width: 850px;
+  margin: 0 auto;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity var(--transition-normal) ease-in-out;
+}
+
+.testimonial-quote {
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 3vw, 1.85rem);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+  position: relative;
+}
+
+.testimonial-author {
+  font-weight: 600;
+  color: var(--color-primary);
+  font-size: 1.05rem;
+}
+
+.testimonial-business {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+.testimonial-controls {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+  align-items: center;
+}
+
+.testimonial-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-round);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.testimonial-arrow:hover {
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.testimonial-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-round);
+  background-color: var(--border-color);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.testimonial-dot.active {
+  background-color: var(--color-primary);
+  width: 24px;
+}
+

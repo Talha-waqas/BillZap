@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Zap, 
   ArrowRight, 
@@ -9,7 +9,9 @@ import {
   Database,
   Lock,
   Plus,
-  Trash2
+  Trash2,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { calculateInvoiceTotals } from '../../lib/validation/invoice';
 import { isSupabaseConfigured } from '../../lib/supabase/client';
@@ -42,6 +44,33 @@ export const LandingPage: React.FC = () => {
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
   };
+
+  const testimonials = [
+    {
+      quote: "“BillZap completely changed how I run my boutique. Sending invoices to WhatsApp customers used to take me minutes of manual calculations. Now I do it in 20 seconds. Absolutely recommended!”",
+      author: "Talha Waqas",
+      business: "Founder, NØRTH Clothing"
+    },
+    {
+      quote: "“Being a home-based food seller, sending professional receipts via WhatsApp built immediate trust. The custom logo and clean PDF layout make my brand look extremely premium!”",
+      author: "Ayesha Khan",
+      business: "Owner, Grace Kitchens"
+    },
+    {
+      quote: "“No complex API setup, no monthly subscription cards needed. I just type in the items, select WhatsApp, and my customers get their invoice receipt instantly. The easiest tool on the market!”",
+      author: "Zubair Ahmed",
+      business: "Founder, TechHub Pakistan"
+    }
+  ];
+
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div style={{ backgroundColor: 'var(--bg-app)', color: 'var(--text-primary)', minHeight: '100vh' }}>
@@ -386,6 +415,52 @@ export const LandingPage: React.FC = () => {
             </p>
           </div>
 
+        </div>
+      </section>
+
+      {/* Testimonials Slider Section */}
+      <section className="testimonial-slider-section" id="testimonials">
+        <span className="landing-badge">Testimonials</span>
+        <h2 style={{ textAlign: 'center', fontFamily: 'var(--font-heading)', fontSize: '2rem', marginBottom: '3rem' }}>
+          Loved by Small Business Owners
+        </h2>
+
+        <div className="testimonial-container">
+          <p className="testimonial-quote">
+            {testimonials[activeTestimonial].quote}
+          </p>
+          <div className="testimonial-author">
+            {testimonials[activeTestimonial].author}
+          </div>
+          <div className="testimonial-business">
+            {testimonials[activeTestimonial].business}
+          </div>
+        </div>
+
+        <div className="testimonial-controls">
+          <button 
+            className="testimonial-arrow"
+            onClick={() => setActiveTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)}
+            aria-label="Previous testimonial"
+          >
+            <ChevronLeft size={20} />
+          </button>
+
+          {testimonials.map((_, index) => (
+            <div 
+              key={index}
+              className={`testimonial-dot ${activeTestimonial === index ? 'active' : ''}`}
+              onClick={() => setActiveTestimonial(index)}
+            />
+          ))}
+
+          <button 
+            className="testimonial-arrow"
+            onClick={() => setActiveTestimonial((prev) => (prev + 1) % testimonials.length)}
+            aria-label="Next testimonial"
+          >
+            <ChevronRight size={20} />
+          </button>
         </div>
       </section>
 

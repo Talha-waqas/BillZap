@@ -1111,3 +1111,61 @@ select.form-control {
   max-width: 800px;
   margin: var(--space-2xl) auto 0 auto;
 }
+
+/* =========================================================================
+   8. Responsive Polish Overrides (Mobile-First Optimization)
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  /* Pricing Grid Layout adjustment */
+  .pricing-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-md);
+  }
+}
+
+@media (max-width: 600px) {
+  /* Landing page header navigation links spacing & visibility */
+  .landing-navbar {
+    padding: 0 var(--space-md);
+  }
+  .landing-nav-links a {
+    display: none; /* Collapses anchor links to make space on small viewports */
+  }
+  .landing-nav-links {
+    gap: var(--space-xs);
+  }
+  .landing-nav-links button {
+    padding: 0.45rem 0.8rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* CTA box padding optimizer */
+  .cta-box {
+    padding: var(--space-lg) var(--space-md);
+    margin-left: var(--space-md);
+    margin-right: var(--space-md);
+  }
+
+  /* Invoice Paper Mockup responsive scaling */
+  .invoice-paper {
+    padding: var(--space-md) !important;
+    font-size: 0.7rem !important;
+  }
+  .invoice-paper-title {
+    font-size: 1.3rem !important;
+  }
+  .invoice-paper-details {
+    gap: var(--space-md) !important;
+    margin-bottom: var(--space-md) !important;
+  }
+  .invoice-paper-totals {
+    width: 200px !important;
+    margin-bottom: var(--space-md) !important;
+  }
+
+  /* Standalone admin portal margins */
+  div[style*="max-width: 1200px"] {
+    padding: 1.5rem var(--space-sm) !important;
+  }
+}

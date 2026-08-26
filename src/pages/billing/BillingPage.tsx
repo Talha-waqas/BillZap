@@ -82,7 +82,7 @@ export const BillingPage: React.FC<BillingPageProps> = ({
       const message = `Hi Talha! I just made the payment of Rs. 499 for BillZap Pro. Please activate my account.\n\nBusiness Details:\n- Name: ${business.name}\n- Registered Email: ${userEmail}\n- Phone: ${business.phone || 'N/A'}`;
       const encodedText = encodeURIComponent(message);
       
-      const waLink = `https://wa.me/923001234567?text=${encodedText}`;
+      const waLink = `https://wa.me/923228964384?text=${encodedText}`;
       window.open(waLink, '_blank');
     } catch (err) {
       console.error(err);
@@ -253,19 +253,26 @@ export const BillingPage: React.FC<BillingPageProps> = ({
             <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-primary)' }}>Payment Options</h4>
             
             <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: 'var(--space-xs)' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Option 1: Bank Transfer</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Easypaisa / JazzCash</span>
               <div style={{ fontSize: '0.9rem', fontWeight: 500, marginTop: '2px' }}>
-                Bank Alfalah (0102)<br />
-                Account Number: <strong>5512-3004-9912</strong><br />
-                Account Title: <strong>Talha Waqas</strong>
+                Account Number: <strong>03228964384</strong><br />
+                Account Title: <strong>Talha</strong>
+              </div>
+            </div>
+
+            <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: 'var(--space-xs)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>NayaPay</span>
+              <div style={{ fontSize: '0.9rem', fontWeight: 500, marginTop: '2px' }}>
+                NayaPay ID: <strong>talha.dev@nayapay</strong><br />
+                Account Number: <strong>03228964384</strong><br />
+                IBAN: <strong style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>PK07NAYA1234503228964384</strong>
               </div>
             </div>
 
             <div>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Option 2: Easypaisa / JazzCash</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>SadaPay</span>
               <div style={{ fontSize: '0.9rem', fontWeight: 500, marginTop: '2px' }}>
-                Mobile Wallet: <strong>0300-1234567</strong><br />
-                Account Title: <strong>Talha Waqas</strong>
+                Account Number: <strong>03228964384</strong>
               </div>
             </div>
           </div>

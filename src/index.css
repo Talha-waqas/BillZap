@@ -755,31 +755,14 @@ select.form-control {
   margin-bottom: var(--space-sm);
 }
 
-.invoice-item-row-sub {
-  display: contents;
-}
-
 @media (max-width: 600px) {
   .invoice-item-row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: var(--space-xs) !important;
+    grid-template-columns: 1fr;
+    gap: var(--space-xs);
     border: 1px solid var(--border-color);
-    padding: var(--space-md) !important;
+    padding: var(--space-md);
     border-radius: var(--radius-md);
     position: relative;
-  }
-
-  .invoice-item-row-sub {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: var(--space-xs) !important;
-    align-items: center;
-    width: 100%;
-  }
-
-  .invoice-item-row-sub > input {
-    margin-bottom: 0 !important;
   }
 }
 
@@ -1569,35 +1552,9 @@ select.form-control {
     gap: var(--space-lg) !important;
     width: 100%;
   }
-
-  .demo-content-col {
-    text-align: center !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: var(--space-md);
-  }
-
-  .demo-content-col > h2, 
-  .demo-content-col > p {
-    text-align: center !important;
-  }
-
-  .demo-content-col > div, 
-  .demo-content-col > button {
-    align-self: center !important;
-  }
 }
 
 @media (max-width: 600px) {
-  /* Reduce landing page side padding to fit 320px screens */
-  .landing-section {
-    padding: 3rem var(--space-md) !important;
-  }
-
-  .luxury-hero-section {
-    padding: 6rem var(--space-md) 3rem var(--space-md) !important;
-  }
 
   /* Hide absolute badges on mobile phones to prevent overlap clutter */
   .hero-float-badge {

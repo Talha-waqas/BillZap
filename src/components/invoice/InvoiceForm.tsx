@@ -389,32 +389,30 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={item.description}
                     onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
                   />
-                  <div className="invoice-item-row-sub">
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="Qty"
-                      value={item.quantity === 0 ? '' : item.quantity}
-                      onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
-                    />
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="Price"
-                      value={item.unit_price === 0 ? '' : item.unit_price}
-                      onChange={(e) => handleItemChange(idx, 'unit_price', e.target.value)}
-                    />
-                    <div style={{ minWidth: '80px', textAlign: 'right', fontWeight: 600, fontSize: '0.9rem' }}>
-                      {currencySymbol} {item.total.toLocaleString()}
-                    </div>
-                    <button
-                      onClick={() => handleRemoveItem(idx)}
-                      style={{ background: 'transparent', color: 'var(--color-danger)', border: 'none', cursor: 'pointer', padding: 'var(--space-2xs)' }}
-                      title="Remove item"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Qty"
+                    value={item.quantity === 0 ? '' : item.quantity}
+                    onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
+                  />
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Price"
+                    value={item.unit_price === 0 ? '' : item.unit_price}
+                    onChange={(e) => handleItemChange(idx, 'unit_price', e.target.value)}
+                  />
+                  <div style={{ minWidth: '80px', textAlign: 'right', fontWeight: 600, fontSize: '0.9rem' }}>
+                    {currencySymbol} {item.total.toLocaleString()}
                   </div>
+                  <button
+                    onClick={() => handleRemoveItem(idx)}
+                    style={{ background: 'transparent', color: 'var(--color-danger)', border: 'none', cursor: 'pointer', padding: 'var(--space-2xs)' }}
+                    title="Remove item"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               ))}
             </div>

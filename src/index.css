@@ -779,14 +779,54 @@ select.form-control {
   margin-bottom: var(--space-sm);
 }
 
+.invoice-item-row-sub {
+  display: contents;
+}
+
 @media (max-width: 600px) {
   .invoice-item-row {
-    grid-template-columns: 1fr;
-    gap: var(--space-xs);
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--space-xs) !important;
     border: 1px solid var(--border-color);
-    padding: var(--space-md);
+    padding: var(--space-md) !important;
     border-radius: var(--radius-md);
     position: relative;
+  }
+
+  .invoice-item-row-sub {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: var(--space-xs) !important;
+    align-items: center;
+    width: 100%;
+  }
+
+  .invoice-item-row-sub > input {
+    margin-bottom: 0 !important;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .invoice-item-total {
+    min-width: 70px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding-right: 4px;
+    white-space: nowrap;
+  }
+
+  .invoice-item-delete {
+    background: transparent;
+    color: var(--color-danger);
+    border: none;
+    cursor: pointer;
+    padding: var(--space-2xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
   }
 }
 

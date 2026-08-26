@@ -123,7 +123,7 @@ export const LandingPage: React.FC = () => {
         <div className="luxury-hero-grid">
           
           {/* Left Column: Copy & Actions */}
-          <div style={{ textAlign: 'left' }}>
+          <div className="hero-content-col">
             <span className="luxury-badge">
               🇵🇰 Pakistan's No. 1 WhatsApp Billing Tool
             </span>

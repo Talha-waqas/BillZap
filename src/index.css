@@ -1459,8 +1459,43 @@ select.form-control {
 }
 
 @media (max-width: 968px) {
+  .hero-content-col {
+    text-align: center !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .luxury-title {
+    text-align: center !important;
+  }
+  .luxury-desc {
+    text-align: center !important;
+  }
+  .landing-hero-actions {
+    justify-content: center !important;
+  }
   .hero-stats-row {
     justify-content: center;
+    gap: var(--space-lg) !important;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Hide absolute badges on mobile phones to prevent overlap clutter */
+  .hero-float-badge {
+    display: none !important;
+  }
+  
+  /* Scale down the mockup card width to avoid side scroll overflows */
+  .hero-mockup-card {
+    max-width: 320px !important;
+    padding: var(--space-md) !important;
+  }
+
+  .hero-stats-row {
+    gap: var(--space-md) !important;
+    flex-wrap: wrap;
   }
 }
 

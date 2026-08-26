@@ -322,7 +322,8 @@ export const LandingPage: React.FC = () => {
       <section className="landing-section" id="demo" style={{ borderTop: '1px solid var(--border-color)' }}>
         <div className="landing-grid-2">
           
-          <div>
+          {/* Left Column: Demo copy info */}
+          <div className="demo-content-col">
             <span className="landing-badge">Interactive Demo</span>
             <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-heading)', marginBottom: 'var(--space-md)' }}>
               Try it yourself. Calculate live.

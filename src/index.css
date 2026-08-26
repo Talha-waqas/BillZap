@@ -9,22 +9,32 @@
   --font-body: 'Inter', sans-serif;
 
   /* Color Palette - Premium Zinc Dark Mode */
-  --bg-app: #09090b;          /* Zinc 950 */
-  --bg-surface: #121214;      /* Zinc 900 modified */
-  --bg-surface-elevated: #1e1e24; /* Zinc 850 */
-  --border-color: #27272a;    /* Zinc 800 */
-  --border-hover: #3f3f46;    /* Zinc 700 */
+  --bg-app: #09090b;
+  /* Zinc 950 */
+  --bg-surface: #121214;
+  /* Zinc 900 modified */
+  --bg-surface-elevated: #1e1e24;
+  /* Zinc 850 */
+  --border-color: #27272a;
+  /* Zinc 800 */
+  --border-hover: #3f3f46;
+  /* Zinc 700 */
 
   /* Accent - Zap Emerald (WhatsApp & Cash theme) */
-  --color-primary: #10b981;   /* Emerald 500 */
-  --color-primary-hover: #059669; /* Emerald 600 */
+  --color-primary: #10b981;
+  /* Emerald 500 */
+  --color-primary-hover: #059669;
+  /* Emerald 600 */
   --color-primary-light: rgba(16, 185, 129, 0.1);
   --color-primary-text: #ffffff;
 
   /* Neutrals */
-  --text-primary: #f4f4f5;    /* Zinc 100 */
-  --text-secondary: #a1a1aa;  /* Zinc 400 */
-  --text-muted: #71717a;      /* Zinc 500 */
+  --text-primary: #f4f4f5;
+  /* Zinc 100 */
+  --text-secondary: #a1a1aa;
+  /* Zinc 400 */
+  --text-muted: #71717a;
+  /* Zinc 500 */
   --text-inverse: #09090b;
 
   /* Functional Colors */
@@ -68,7 +78,9 @@
 /* =========================================================================
    2. Resets & Document Base
    ========================================================================= */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -90,7 +102,12 @@ body {
   line-height: 1.5;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
   font-weight: 600;
   line-height: 1.25;
@@ -103,7 +120,10 @@ a {
   transition: var(--transition-fast);
 }
 
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
@@ -401,6 +421,7 @@ select.form-control {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -465,6 +486,7 @@ select.form-control {
     transform: translateY(100%) scale(0.9);
     opacity: 0;
   }
+
   to {
     transform: translateY(0) scale(1);
     opacity: 1;
@@ -511,6 +533,7 @@ select.form-control {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -561,7 +584,8 @@ select.form-control {
   font-size: 0.9375rem;
 }
 
-.sidebar-item:hover, .sidebar-item.active {
+.sidebar-item:hover,
+.sidebar-item.active {
   color: var(--text-primary);
   background-color: rgba(255, 255, 255, 0.03);
 }
@@ -638,6 +662,7 @@ select.form-control {
   .mobile-header {
     display: flex;
   }
+
   .sidebar {
     position: fixed;
     left: -240px;
@@ -645,9 +670,11 @@ select.form-control {
     z-index: 200;
     transition: left var(--transition-normal);
   }
+
   .sidebar.open {
     left: 0;
   }
+
   .sidebar-backdrop {
     position: fixed;
     top: 0;
@@ -728,14 +755,31 @@ select.form-control {
   margin-bottom: var(--space-sm);
 }
 
+.invoice-item-row-sub {
+  display: contents;
+}
+
 @media (max-width: 600px) {
   .invoice-item-row {
-    grid-template-columns: 1fr;
-    gap: var(--space-xs);
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--space-xs) !important;
     border: 1px solid var(--border-color);
-    padding: var(--space-md);
+    padding: var(--space-md) !important;
     border-radius: var(--radius-md);
     position: relative;
+  }
+
+  .invoice-item-row-sub {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: var(--space-xs) !important;
+    align-items: center;
+    width: 100%;
+  }
+
+  .invoice-item-row-sub > input {
+    margin-bottom: 0 !important;
   }
 }
 
@@ -747,13 +791,15 @@ select.form-control {
 
 .invoice-paper {
   background-color: #ffffff;
-  color: #1c1917; /* Slate 900 */
+  color: #1c1917;
+  /* Slate 900 */
   border-radius: var(--radius-md);
   padding: var(--space-xl);
   box-shadow: var(--shadow-lg);
   font-size: 0.875rem;
   line-height: 1.4;
-  aspect-ratio: 1 / 1.414; /* A4 Ratio */
+  aspect-ratio: 1 / 1.414;
+  /* A4 Ratio */
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
@@ -762,7 +808,11 @@ select.form-control {
   justify-content: space-between;
 }
 
-.invoice-paper h1, .invoice-paper h2, .invoice-paper h3, .invoice-paper h4, .invoice-paper h5 {
+.invoice-paper h1,
+.invoice-paper h2,
+.invoice-paper h3,
+.invoice-paper h4,
+.invoice-paper h5 {
   color: #1c1917;
 }
 
@@ -865,11 +915,12 @@ select.form-control {
   body * {
     visibility: hidden;
   }
-  
-  .invoice-paper, .invoice-paper * {
+
+  .invoice-paper,
+  .invoice-paper * {
     visibility: visible;
   }
-  
+
   .invoice-paper {
     position: absolute;
     left: 0;
@@ -1126,6 +1177,7 @@ select.form-control {
    ========================================================================= */
 
 @media (max-width: 768px) {
+
   /* Pricing Grid Layout adjustment */
   .pricing-grid {
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -1134,14 +1186,16 @@ select.form-control {
 }
 
 @media (max-width: 600px) {
+
   /* Hero buttons vertical stack alignment */
   .landing-hero-actions {
     flex-direction: column !important;
     align-items: center !important;
     width: 100% !important;
   }
-  .landing-hero-actions > button, 
-  .landing-hero-actions > a {
+
+  .landing-hero-actions>button,
+  .landing-hero-actions>a {
     width: 100% !important;
     max-width: 320px !important;
     justify-content: center !important;
@@ -1152,12 +1206,16 @@ select.form-control {
   .landing-navbar {
     padding: 0 var(--space-md);
   }
+
   .landing-nav-links a {
-    display: none; /* Collapses anchor links to make space on small viewports */
+    display: none;
+    /* Collapses anchor links to make space on small viewports */
   }
+
   .landing-nav-links {
     gap: var(--space-xs);
   }
+
   .landing-nav-links button {
     padding: 0.45rem 0.8rem !important;
     font-size: 0.8rem !important;
@@ -1175,13 +1233,16 @@ select.form-control {
     padding: var(--space-md) !important;
     font-size: 0.7rem !important;
   }
+
   .invoice-paper-title {
     font-size: 1.3rem !important;
   }
+
   .invoice-paper-details {
     gap: var(--space-md) !important;
     margin-bottom: var(--space-md) !important;
   }
+
   .invoice-paper-totals {
     width: 200px !important;
     margin-bottom: var(--space-md) !important;
@@ -1290,7 +1351,7 @@ select.form-control {
   align-items: center;
   padding: 8rem 2rem 5rem 2rem;
   background: radial-gradient(circle at 15% 25%, rgba(16, 185, 129, 0.06) 0%, transparent 45%),
-              radial-gradient(circle at 85% 75%, rgba(59, 130, 246, 0.04) 0%, transparent 45%);
+    radial-gradient(circle at 85% 75%, rgba(59, 130, 246, 0.04) 0%, transparent 45%);
   overflow: hidden;
   border-bottom: 1px solid var(--border-color);
 }
@@ -1312,6 +1373,7 @@ select.form-control {
     padding: 7rem 1rem 4rem 1rem;
     text-align: center;
   }
+
   .luxury-hero-grid {
     grid-template-columns: 1fr;
     gap: var(--space-2xl);
@@ -1347,7 +1409,7 @@ select.form-control {
 
 .text-gradient {
   background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -1382,7 +1444,7 @@ select.form-control {
   padding: var(--space-lg);
   width: 100%;
   max-width: 380px;
-  box-shadow: var(--shadow-lg), 0 20px 40px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow-lg), 0 20px 40px rgba(0, 0, 0, 0.5);
   animation: floatCard 6s ease-in-out infinite;
   position: relative;
   text-align: left;
@@ -1403,9 +1465,17 @@ select.form-control {
 }
 
 @keyframes floatCard {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(1.5deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-15px) rotate(1.5deg);
+  }
+
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
 }
 
 /* Float mini features badges */
@@ -1438,15 +1508,31 @@ select.form-control {
 }
 
 @keyframes floatBadge1 {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 @keyframes floatBadge2 {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(10px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 /* Stats Row */
@@ -1465,28 +1551,59 @@ select.form-control {
     flex-direction: column;
     align-items: center;
   }
+
   .luxury-title {
     text-align: center !important;
   }
+
   .luxury-desc {
     text-align: center !important;
   }
+
   .landing-hero-actions {
     justify-content: center !important;
   }
+
   .hero-stats-row {
     justify-content: center;
     gap: var(--space-lg) !important;
     width: 100%;
   }
+
+  .demo-content-col {
+    text-align: center !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: var(--space-md);
+  }
+
+  .demo-content-col > h2, 
+  .demo-content-col > p {
+    text-align: center !important;
+  }
+
+  .demo-content-col > div, 
+  .demo-content-col > button {
+    align-self: center !important;
+  }
 }
 
 @media (max-width: 600px) {
+  /* Reduce landing page side padding to fit 320px screens */
+  .landing-section {
+    padding: 3rem var(--space-md) !important;
+  }
+
+  .luxury-hero-section {
+    padding: 6rem var(--space-md) 3rem var(--space-md) !important;
+  }
+
   /* Hide absolute badges on mobile phones to prevent overlap clutter */
   .hero-float-badge {
     display: none !important;
   }
-  
+
   /* Scale down the mockup card width to avoid side scroll overflows */
   .hero-mockup-card {
     max-width: 320px !important;
@@ -1515,6 +1632,3 @@ select.form-control {
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
-
-
-

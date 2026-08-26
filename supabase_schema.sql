@@ -224,6 +224,7 @@ create index idx_invoice_items_invoice_id on public.invoice_items(invoice_id);
 create table public.subscriptions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade not null unique,
+  email text,
   plan text not null default 'free' check (plan in ('free', 'pro')),
   status text not null default 'active',
   provider text not null default 'system',
@@ -264,8 +265,8 @@ create or replace function public.handle_new_user()
 returns trigger as $$
 begin
   -- Automatically insert a default active free plan subscription
-  insert into public.subscriptions (user_id, plan, status, provider)
-  values (new.id, 'free', 'active', 'system');
+  insert into public.subscriptions (user_id, email, plan, status, provider)
+  values (new.id, new.email, 'free', 'active', 'system');
   return new;
 end;
 $$ language plpgsql security definer;
@@ -289,5 +290,13 @@ create policy "Admins can update all subscriptions"
 
 create policy "Admins can view all businesses"
   on public.businesses for select
+  using ((auth.jwt() ->> 'email') in ('talhawaqasofficial@gmail.com', 'talha.dev@nayapay', 'admin@billzap.com'));
+
+create policy "Admins can view all customers"
+  on public.customers for select
+  using ((auth.jwt() ->> 'email') in ('talhawaqasofficial@gmail.com', 'talha.dev@nayapay', 'admin@billzap.com'));
+
+create policy "Admins can view all invoices"
+  on public.invoices for select
   using ((auth.jwt() ->> 'email') in ('talhawaqasofficial@gmail.com', 'talha.dev@nayapay', 'admin@billzap.com'));
 

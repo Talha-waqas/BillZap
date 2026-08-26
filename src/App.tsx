@@ -50,8 +50,12 @@ type Route =
   | { name: 'billing' }
   | { name: 'admin' };
 
-function parseHash(hash: string): Route {
-  const cleanHash = hash.replace(/^#/, '');
+function parseLocation(): Route {
+  if (window.location.pathname === '/admin') {
+    return { name: 'admin' };
+  }
+
+  const cleanHash = window.location.hash.replace(/^#/, '');
   const [path, queryString] = cleanHash.split('?');
   const params = new URLSearchParams(queryString || '');
   const id = params.get('id') || '';
@@ -95,18 +99,20 @@ function App() {
     }, 4000);
   };
 
-  // 2. Hash Router Listener
+  // 2. Hash & Pathname Router Listener
   useEffect(() => {
-    const handleHashChange = () => {
-      const parsed = parseHash(window.location.hash);
+    const handleLocationChange = () => {
+      const parsed = parseLocation();
       setRoute(parsed);
     };
 
-    window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // Run once initially
+    window.addEventListener('hashchange', handleLocationChange);
+    window.addEventListener('popstate', handleLocationChange);
+    handleLocationChange(); // Run once initially
 
     return () => {
-      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('hashchange', handleLocationChange);
+      window.removeEventListener('popstate', handleLocationChange);
     };
   }, []);
 
@@ -131,8 +137,12 @@ function App() {
           setBusiness(null);
           setSubscription(null);
           setIsAppLoading(false);
-          // If logged out, redirect to landing
-          window.location.hash = '#landing';
+          // If logged out, redirect to landing unless on admin page
+          if (window.location.pathname === '/admin') {
+            setRoute({ name: 'admin' });
+          } else {
+            window.location.hash = '#landing';
+          }
         }
       }
     );
@@ -204,7 +214,12 @@ function App() {
 
   // Navigate function passed to children
   const handleNavigate = (path: string) => {
-    window.location.hash = `#${path}`;
+    if (path === 'admin') {
+      window.history.pushState({}, '', '/admin');
+      setRoute({ name: 'admin' });
+    } else {
+      window.location.hash = `#${path}`;
+    }
   };
 
   if (isAppLoading) {
@@ -379,8 +394,8 @@ function App() {
               />
             )}
 
-            {route.name === 'admin' && business && ADMIN_EMAILS.includes(userEmail) && (
-              <AdminPage onToast={triggerToast} />
+            {route.name === 'admin' && (
+              <AdminPage onToast={triggerToast} session={session} />
             )}
           </main>
         </div>

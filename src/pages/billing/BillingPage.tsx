@@ -11,6 +11,8 @@ import { subscriptionService } from '../../services/subscriptionService';
 import { invoiceService } from '../../services/invoiceService';
 import { Business, Subscription } from '../../types';
 import { Button } from '../../components/ui/Button';
+import { Modal } from '../../components/ui/Modal';
+import { supabase } from '../../lib/supabase/client';
 
 interface BillingPageProps {
   business: Business;
@@ -46,6 +48,8 @@ export const BillingPage: React.FC<BillingPageProps> = ({
     loadUsageStats();
   }, []);
 
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
   const handleUpgrade = async () => {
     setIsUpdating(true);
     onToast('Processing payment simulation...', 'success');
@@ -58,6 +62,7 @@ export const BillingPage: React.FC<BillingPageProps> = ({
         if (updatedSub) {
           onSubscriptionUpdate(updatedSub);
           onToast('Subscription upgraded to Pro! All features unlocked.', 'success');
+          setIsPaymentModalOpen(false);
         }
       } else {
         onToast('Payment simulation failed.', 'error');
@@ -66,6 +71,22 @@ export const BillingPage: React.FC<BillingPageProps> = ({
       onToast('Upgrade failed: ' + err.message, 'error');
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleWhatsAppPaymentProof = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const userEmail = user?.email || 'N/A';
+      
+      const message = `Hi Talha! I just made the payment of Rs. 499 for BillZap Pro. Please activate my account.\n\nBusiness Details:\n- Name: ${business.name}\n- Registered Email: ${userEmail}\n- Phone: ${business.phone || 'N/A'}`;
+      const encodedText = encodeURIComponent(message);
+      
+      const waLink = `https://wa.me/923001234567?text=${encodedText}`;
+      window.open(waLink, '_blank');
+    } catch (err) {
+      console.error(err);
+      onToast('Failed to generate payment proof details.', 'error');
     }
   };
 
@@ -187,12 +208,11 @@ export const BillingPage: React.FC<BillingPageProps> = ({
 
               {subscription.plan === 'free' ? (
                 <Button 
-                  onClick={handleUpgrade}
-                  isLoading={isUpdating}
+                  onClick={() => setIsPaymentModalOpen(true)}
                   style={{ width: '100%', marginTop: 'var(--space-md)' }}
                   icon={<ArrowUpRight size={16} />}
                 >
-                  Upgrade to Pro (Simulated)
+                  Upgrade to Pro
                 </Button>
               ) : (
                 <Button 
@@ -210,6 +230,79 @@ export const BillingPage: React.FC<BillingPageProps> = ({
         </div>
 
       </div>
+
+      <Modal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        title="Upgrade to BillZap Pro"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            To unlock unlimited invoices, custom branding logo, and remove footer watermarks, please make a monthly payment of <strong>Rs. 499</strong>.
+          </p>
+
+          <div style={{ 
+            backgroundColor: 'rgba(255, 255, 255, 0.02)', 
+            border: '1px solid var(--border-color)', 
+            borderRadius: 'var(--radius-md)', 
+            padding: 'var(--space-md)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-sm)'
+          }}>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-primary)' }}>Payment Options</h4>
+            
+            <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: 'var(--space-xs)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Option 1: Bank Transfer</span>
+              <div style={{ fontSize: '0.9rem', fontWeight: 500, marginTop: '2px' }}>
+                Bank Alfalah (0102)<br />
+                Account Number: <strong>5512-3004-9912</strong><br />
+                Account Title: <strong>Talha Waqas</strong>
+              </div>
+            </div>
+
+            <div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Option 2: Easypaisa / JazzCash</span>
+              <div style={{ fontSize: '0.9rem', fontWeight: 500, marginTop: '2px' }}>
+                Mobile Wallet: <strong>0300-1234567</strong><br />
+                Account Title: <strong>Talha Waqas</strong>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', margin: 'var(--space-2xs) 0' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              Once transferred, click the button below to send your payment screenshot on WhatsApp.
+            </span>
+          </div>
+
+          <Button
+            onClick={handleWhatsAppPaymentProof}
+            style={{ width: '100%', backgroundColor: '#25D366', color: 'white', border: 'none' }}
+          >
+            Send Payment Proof via WhatsApp
+          </Button>
+
+          <div style={{ 
+            borderTop: '1px dashed var(--border-color)', 
+            paddingTop: 'var(--space-sm)',
+            marginTop: 'var(--space-xs)',
+            textAlign: 'center'
+          }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: 'var(--space-xs)' }}>
+              Developer Sandbox Options:
+            </span>
+            <Button
+              onClick={handleUpgrade}
+              isLoading={isUpdating}
+              variant="outline"
+              style={{ width: '100%', padding: '0.5rem 1rem', fontSize: '0.85rem' }}
+            >
+              Simulate Instant Payment (For Testing)
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
     </div>
   );

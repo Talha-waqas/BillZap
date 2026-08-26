@@ -534,9 +534,93 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{ borderTop: '1px solid var(--border-color)', padding: '2rem', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-        <p>&copy; {new Date().getFullYear()} BillZap. All rights reserved. Built for modern retail sellers.</p>
+      {/* Premium Footer */}
+      <footer style={{ 
+        borderTop: '1px solid var(--border-color)', 
+        backgroundColor: '#09090b', 
+        padding: '5rem 2rem 2rem 2rem', 
+        color: 'var(--text-secondary)'
+      }}>
+        <div style={{ 
+          maxWidth: '1200px', 
+          margin: '0 auto', 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: 'var(--space-2xl)',
+          marginBottom: '3rem'
+        }}>
+          {/* Brand Info */}
+          <div>
+            <div style={{ 
+              fontFamily: 'var(--font-heading)', 
+              fontWeight: 700, 
+              fontSize: '1.5rem', 
+              color: 'var(--color-primary)', 
+              marginBottom: 'var(--space-sm)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              BillZap
+            </div>
+            <p style={{ fontSize: '0.875rem', lineHeight: 1.6, color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
+              Quick, professional PDF invoice maker for freelancers, home-brands, and retail sellers. Share directly on WhatsApp.
+            </p>
+          </div>
+
+          {/* Product links */}
+          <div>
+            <h4 style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Product</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.875rem' }}>
+              <li><a href="#hero">Home</a></li>
+              <li><a href="#features">Features</a></li>
+              <li><a href="#demo">Interactive Demo</a></li>
+              <li><a href="#pricing">Pricing Plans</a></li>
+            </ul>
+          </div>
+
+          {/* Admin & Support */}
+          <div>
+            <h4 style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Portals</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.875rem' }}>
+              <li><a href="#login">Seller Login</a></li>
+              <li><a href="#signup">Create Account</a></li>
+              <li><a href="/admin" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Admin Portal</a></li>
+              <li><a href="https://wa.me/923228964384" target="_blank" rel="noopener noreferrer">WhatsApp Support</a></li>
+            </ul>
+          </div>
+
+          {/* Trust Details */}
+          <div>
+            <h4 style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Local Support</h4>
+            <p style={{ fontSize: '0.875rem', lineHeight: 1.6 }}>
+              Made with 💚 in Pakistan.<br />
+              Supporting local wallets: Easypaisa, JazzCash, NayaPay & SadaPay.
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom copyright line */}
+        <div style={{ 
+          maxWidth: '1200px', 
+          margin: '0 auto', 
+          borderTop: '1px solid var(--border-color)', 
+          paddingTop: '2rem', 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          flexWrap: 'wrap', 
+          gap: 'var(--space-md)',
+          fontSize: '0.8rem',
+          color: 'var(--text-muted)'
+        }}>
+          <p>&copy; {new Date().getFullYear()} BillZap. All rights reserved. Built for modern retail sellers.</p>
+          <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
+            <a href="#faq">FAQ</a>
+            <span>&bull;</span>
+            <a href="https://wa.me/923228964384" target="_blank" rel="noopener noreferrer">Contact Support</a>
+          </div>
+        </div>
       </footer>
 
     </div>

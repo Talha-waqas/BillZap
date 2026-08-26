@@ -235,16 +235,24 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       {/* Welcome Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-xl)', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', marginBottom: '4px' }}>
-            {getGreeting()}, {userName.split(' ')[0] || 'Partner'}
+          <h1 style={{ fontSize: '1.85rem', fontFamily: 'var(--font-heading)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: '4px' }}>
+            {getGreeting()}, <span style={{ color: 'var(--color-primary)' }}>{userName.split(' ')[0] || 'Partner'}</span>
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Manage invoices for <strong>{business.name}</strong>.
+            Manage invoices for <strong style={{ color: '#ffffff' }}>{business.name}</strong>.
           </p>
         </div>
         <Button 
           onClick={() => window.location.hash = '#invoice-create'}
           icon={<Plus size={16} />}
+          style={{
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            boxShadow: '0 4px 14px rgba(16, 185, 129, 0.25)',
+            border: 'none',
+            padding: '0.7rem 1.4rem',
+            color: '#09090b',
+            fontWeight: 600
+          }}
         >
           Create Invoice
         </Button>

@@ -29,8 +29,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // Tab state: 'users' | 'customers' | 'invoices'
-  const [activeTab, setActiveTab] = useState<'users' | 'customers' | 'invoices'>('users');
+  // Tab state: 'pro_users' | 'free_users' | 'customers' | 'invoices'
+  const [activeTab, setActiveTab] = useState<'pro_users' | 'free_users' | 'customers' | 'invoices'>('pro_users');
 
   // Database states
   const [stats, setStats] = useState({ total: 0, free: 0, pro: 0, totalCustomers: 0, totalInvoices: 0, totalVolume: 0 });
@@ -452,10 +452,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
   }
 
   // C. Main Admin Dashboard View
-  const filteredUsers = usersList.filter(u => 
+  const proUsers = usersList.filter(u => u.plan === 'pro');
+  const freeUsers = usersList.filter(u => u.plan === 'free');
+
+  const filteredProUsers = proUsers.filter(u => 
     u.email?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     u.businessName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const filteredFreeUsers = freeUsers.filter(u => 
+    u.email?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    u.businessName?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const activeSellersList = activeTab === 'pro_users' ? filteredProUsers : filteredFreeUsers;
 
   const filteredCustomers = customersList.filter(c => 
     c.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -592,21 +602,38 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
         display: 'flex', 
         borderBottom: '1px solid var(--border-color)', 
         marginBottom: 'var(--space-md)',
-        gap: 'var(--space-md)'
+        gap: 'var(--space-md)',
+        overflowX: 'auto',
+        whiteSpace: 'nowrap'
       }}>
         <button 
-          onClick={() => { setActiveTab('users'); setSearchTerm(''); }}
+          onClick={() => { setActiveTab('pro_users'); setSearchTerm(''); }}
           style={{
             padding: 'var(--space-sm) var(--space-md)',
             background: 'none',
             border: 'none',
-            color: activeTab === 'users' ? 'var(--color-primary)' : 'var(--text-secondary)',
-            borderBottom: activeTab === 'users' ? '2px solid var(--color-primary)' : '2px solid transparent',
+            color: activeTab === 'pro_users' ? 'var(--color-primary)' : 'var(--text-secondary)',
+            borderBottom: activeTab === 'pro_users' ? '2px solid var(--color-primary)' : '2px solid transparent',
             cursor: 'pointer',
-            fontWeight: activeTab === 'users' ? 600 : 400
+            fontWeight: activeTab === 'pro_users' ? 600 : 400
           }}
         >
-          Sellers & Plans ({filteredUsers.length})
+          Pro Users ({filteredProUsers.length})
+        </button>
+
+        <button 
+          onClick={() => { setActiveTab('free_users'); setSearchTerm(''); }}
+          style={{
+            padding: 'var(--space-sm) var(--space-md)',
+            background: 'none',
+            border: 'none',
+            color: activeTab === 'free_users' ? 'var(--color-primary)' : 'var(--text-secondary)',
+            borderBottom: activeTab === 'free_users' ? '2px solid var(--color-primary)' : '2px solid transparent',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'free_users' ? 600 : 400
+          }}
+        >
+          Free Users ({filteredFreeUsers.length})
         </button>
 
         <button 
@@ -664,7 +691,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
       <div className="card" style={{ padding: 0, overflowX: 'auto', border: '1px solid var(--border-color)' }}>
         
         {/* Render Tab 1: Sellers */}
-        {activeTab === 'users' && (
+        {(activeTab === 'pro_users' || activeTab === 'free_users') && (
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '850px' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
@@ -676,14 +703,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.length === 0 ? (
+              {activeSellersList.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                    No sellers matching the search filter.
+                    No sellers found.
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map((user) => (
+                activeSellersList.map((user) => (
                   <tr key={user.id} style={{ borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
                     <td style={{ padding: 'var(--space-md) var(--space-lg)', fontWeight: 500 }}>
                       <div>{user.businessName}</div>

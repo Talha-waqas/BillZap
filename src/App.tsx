@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from './lib/supabase/client';
+import { ShieldAlert } from 'lucide-react';
 import { subscriptionService } from './services/subscriptionService';
 import { Business, Subscription } from './types';
 
@@ -175,7 +176,7 @@ function App() {
     };
   }, []);
 
-  // 4. Fetch business & subscription profiles
+  // 4. Fetch business & subscription profiles with automatic downgrade check
   const loadUserData = async (userId: string) => {
     setIsAppLoading(true);
     try {
@@ -191,7 +192,33 @@ function App() {
 
       // Get Subscription profile
       const subData = await subscriptionService.getSubscription();
-      setSubscription(subData);
+      
+      // Auto-revoke Pro if unpaid after 1 day (current_period_end + 1 day < now)
+      if (subData && subData.plan === 'pro') {
+        const expiryDate = new Date(subData.current_period_end);
+        const oneDayGracePeriod = new Date(expiryDate.getTime() + 24 * 60 * 60 * 1000);
+        const now = new Date();
+        
+        if (now > oneDayGracePeriod && subData.status !== 'active') {
+          // Silent downgrade
+          await supabase
+            .from('subscriptions')
+            .update({
+              plan: 'free',
+              status: 'active',
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', userId);
+          
+          const freshSub = await subscriptionService.getSubscription();
+          setSubscription(freshSub);
+          triggerToast('Your Pro plan subscription has expired and has been reverted to the Free plan.', 'error');
+        } else {
+          setSubscription(subData);
+        }
+      } else {
+        setSubscription(subData);
+      }
 
     } catch (err: any) {
       console.error('Error loading user profile records:', err);
@@ -266,6 +293,60 @@ function App() {
           marginBottom: 'var(--space-md)'
         }} />
         <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Loading BillZap...</span>
+      </div>
+    );
+  }
+
+  if (session && subscription?.status === 'banned') {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        backgroundColor: 'var(--bg-app)',
+        color: 'var(--text-primary)',
+        padding: 'var(--space-xl)',
+        textAlign: 'center'
+      }}>
+        <div style={{
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          color: 'var(--color-danger)',
+          width: '64px',
+          height: '64px',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 'var(--space-lg)'
+        }}>
+          <ShieldAlert size={36} />
+        </div>
+        <h1 style={{ fontSize: '1.85rem', fontFamily: 'var(--font-heading)', fontWeight: 700, marginBottom: 'var(--space-md)' }}>
+          Account Suspended
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', lineHeight: 1.6, marginBottom: 'var(--space-xl)' }}>
+          This BillZap account has been suspended by the administrator due to payment defaults or violation of terms. Please contact support to restore access.
+        </p>
+        <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
+          <a 
+            href="https://wa.me/923228964384" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="btn btn-primary"
+            style={{ padding: '0.6rem 1.4rem', fontSize: '0.9rem', color: '#09090b', fontWeight: 600 }}
+          >
+            Contact Support (WhatsApp)
+          </a>
+          <button 
+            onClick={() => supabase.auth.signOut()} 
+            className="btn btn-outline"
+            style={{ padding: '0.6rem 1.4rem', fontSize: '0.9rem' }}
+          >
+            Log Out
+          </button>
+        </div>
       </div>
     );
   }

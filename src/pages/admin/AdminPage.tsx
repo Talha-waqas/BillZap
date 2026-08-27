@@ -16,6 +16,7 @@ import { supabase } from '../../lib/supabase/client';
 import { ADMIN_EMAILS } from '../../App';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { Modal } from '../../components/ui/Modal';
 
 interface AdminPageProps {
   onToast: (msg: string, type: 'success' | 'error') => void;
@@ -86,6 +87,31 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
         .order('created_at', { ascending: false });
 
       if (subErr) throw subErr;
+
+      // Silent Auto-revoke check: if any subscription is pro, has expired by more than 1 day, and is not active
+      const now = new Date();
+      if (subs) {
+        for (const sub of subs) {
+          if (sub.plan === 'pro') {
+            const expiryDate = new Date(sub.current_period_end);
+            const oneDayGracePeriod = new Date(expiryDate.getTime() + 24 * 60 * 60 * 1000);
+            
+            if (now > oneDayGracePeriod && sub.status !== 'active') {
+              await supabase
+                .from('subscriptions')
+                .update({
+                  plan: 'free',
+                  status: 'active',
+                  updated_at: new Date().toISOString()
+                })
+                .eq('user_id', sub.user_id);
+              
+              sub.plan = 'free';
+              sub.status = 'active';
+            }
+          }
+        }
+      }
 
       // 2. Fetch businesses (onboarding names)
       const { data: biz, error: bizErr } = await supabase
@@ -197,6 +223,104 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
       setIsLoading(false);
     }
   }, [session]);
+
+  // Date modal states
+  const [editingSub, setEditingSub] = useState<any | null>(null);
+  const [editStart, setEditStart] = useState('');
+  const [editEnd, setEditEnd] = useState('');
+
+  const handleOpenEditDates = (user: any) => {
+    setEditingSub(user);
+    const startStr = user.current_period_start ? new Date(user.current_period_start).toISOString().split('T')[0] : '';
+    const endStr = user.current_period_end ? new Date(user.current_period_end).toISOString().split('T')[0] : '';
+    setEditStart(startStr);
+    setEditEnd(endStr);
+  };
+
+  const handleSaveDates = async () => {
+    if (!editingSub) return;
+    setIsUpdatingId(editingSub.user_id);
+    try {
+      const { error } = await supabase
+        .from('subscriptions')
+        .update({
+          current_period_start: new Date(editStart).toISOString(),
+          current_period_end: new Date(editEnd).toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', editingSub.user_id);
+
+      if (error) throw error;
+      onToast('Subscription dates updated successfully.', 'success');
+      setEditingSub(null);
+      await loadAdminData();
+    } catch (err: any) {
+      console.error(err);
+      onToast(err.message || 'Failed to save dates.', 'error');
+    } finally {
+      setIsUpdatingId(null);
+    }
+  };
+
+  const handleUpdateStatus = async (userId: string, statusVal: string, planVal?: string) => {
+    setIsUpdatingId(userId);
+    try {
+      const updateData: any = {
+        status: statusVal,
+        updated_at: new Date().toISOString()
+      };
+      
+      if (planVal) {
+        updateData.plan = planVal;
+      }
+
+      // If marking as Paid, update start/end periods for next 30 days
+      if (statusVal === 'active' && planVal === 'pro') {
+        const now = new Date();
+        const nextMonth = new Date();
+        nextMonth.setDate(now.getDate() + 30);
+        
+        updateData.current_period_start = now.toISOString();
+        updateData.current_period_end = nextMonth.toISOString();
+      }
+
+      const { error } = await supabase
+        .from('subscriptions')
+        .update(updateData)
+        .eq('user_id', userId);
+
+      if (error) throw error;
+      onToast(`User status successfully updated to ${statusVal.toUpperCase()}`, 'success');
+      await loadAdminData();
+    } catch (err: any) {
+      console.error(err);
+      onToast(err.message || 'Failed to update user status.', 'error');
+    } finally {
+      setIsUpdatingId(null);
+    }
+  };
+
+  const getWhatsAppReminderLink = (user: any) => {
+    if (!user.businessPhone || user.businessPhone === 'N/A') return '#';
+    
+    // Calculate days remaining
+    const expiry = new Date(user.current_period_end);
+    const now = new Date();
+    const diffTime = expiry.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    let daysMessage = `expires in ${diffDays} days`;
+    if (diffDays === 0) daysMessage = `expires today`;
+    if (diffDays < 0) daysMessage = `expired ${Math.abs(diffDays)} days ago`;
+
+    const message = `Hi! This is a friendly reminder that your BillZap Pro subscription for *${user.businessName}* ${daysMessage} (on ${new Date(user.current_period_end).toLocaleDateString()}).\n\nTo renew and maintain unlimited invoice logs, please transfer *Rs. 499* to Easypaisa/JazzCash *03228964384* and send the payment proof screenshot. Thank you!`;
+    const encoded = encodeURIComponent(message);
+    
+    const cleanPhone = user.businessPhone.replace(/\D/g, '');
+    const finalPhone = cleanPhone.startsWith('0') ? '92' + cleanPhone.substring(1) : cleanPhone;
+    
+    return `https://wa.me/${finalPhone}?text=${encoded}`;
+  };
 
   const handleTogglePlan = async (userId: string, currentPlan: 'free' | 'pro') => {
     const nextPlan = currentPlan === 'free' ? 'pro' : 'free';
@@ -541,12 +665,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
         
         {/* Render Tab 1: Sellers */}
         {activeTab === 'users' && (
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '850px' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
                 <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Business Profile</th>
                 <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Registered Email</th>
-                <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Subscription</th>
+                <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Subscription details</th>
                 <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Created Date</th>
                 <th style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'right' }}>Actions</th>
               </tr>
@@ -569,34 +693,160 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
                       {user.email || 'N/A'}
                     </td>
                     <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
-                      <span style={{ 
-                        padding: '2px 8px', 
-                        borderRadius: '12px', 
-                        fontSize: '0.75rem', 
-                        fontWeight: 600,
-                        backgroundColor: user.plan === 'pro' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)',
-                        color: user.plan === 'pro' ? 'var(--color-success)' : 'var(--text-secondary)'
-                      }}>
-                        {user.plan.toUpperCase()}
-                      </span>
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '4px' }}>
+                        <span style={{ 
+                          padding: '2px 8px', 
+                          borderRadius: '12px', 
+                          fontSize: '0.7rem', 
+                          fontWeight: 600,
+                          backgroundColor: user.plan === 'pro' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)',
+                          color: user.plan === 'pro' ? 'var(--color-success)' : 'var(--text-secondary)'
+                        }}>
+                          {user.plan.toUpperCase()}
+                        </span>
+                        
+                        <span style={{ 
+                          padding: '2px 8px', 
+                          borderRadius: '12px', 
+                          fontSize: '0.7rem', 
+                          fontWeight: 600,
+                          backgroundColor: user.status === 'active' ? 'rgba(16, 185, 129, 0.1)' : user.status === 'unpaid' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                          color: user.status === 'active' ? 'var(--color-success)' : user.status === 'unpaid' ? 'var(--color-warning)' : 'var(--color-danger)'
+                        }}>
+                          {user.status.toUpperCase()}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        Start: {new Date(user.current_period_start).toLocaleDateString()}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span>End: {new Date(user.current_period_end).toLocaleDateString()}</span>
+                        {(() => {
+                          const expiry = new Date(user.current_period_end);
+                          const now = new Date();
+                          const diffTime = expiry.getTime() - now.getTime();
+                          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                          if (user.plan === 'pro') {
+                            if (diffDays < 0) return <span style={{ color: 'var(--color-danger)', fontSize: '0.7rem' }}>(Expired)</span>;
+                            if (diffDays <= 3) return <span style={{ color: 'var(--color-warning)', fontSize: '0.7rem' }}>(Expires soon)</span>;
+                          }
+                          return null;
+                        })()}
+                      </div>
                     </td>
                     <td style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                       {new Date(user.created_at).toLocaleDateString()}
                     </td>
                     <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'right' }}>
-                      <Button
-                        variant={user.plan === 'pro' ? 'outline' : 'primary'}
-                        onClick={() => handleTogglePlan(user.user_id, user.plan)}
-                        isLoading={isUpdatingId === user.user_id}
-                        style={{ 
-                          padding: '0.4rem 0.8rem', 
-                          fontSize: '0.75rem', 
-                          borderColor: user.plan === 'pro' ? 'var(--color-danger)' : undefined,
-                          color: user.plan === 'pro' ? 'var(--color-danger)' : undefined
-                        }}
-                      >
-                        {user.plan === 'pro' ? 'Revoke Pro' : 'Make Pro'}
-                      </Button>
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                        
+                        {/* Toggle Plan / Paid Button */}
+                        {user.plan === 'free' ? (
+                          <Button
+                            variant="primary"
+                            onClick={() => handleUpdateStatus(user.user_id, 'active', 'pro')}
+                            isLoading={isUpdatingId === user.user_id}
+                            style={{ padding: '0.35rem 0.65rem', fontSize: '0.7rem' }}
+                          >
+                            Mark Paid
+                          </Button>
+                        ) : (
+                          <>
+                            {user.status !== 'active' ? (
+                              <Button
+                                variant="primary"
+                                onClick={() => handleUpdateStatus(user.user_id, 'active', 'pro')}
+                                isLoading={isUpdatingId === user.user_id}
+                                style={{ padding: '0.35rem 0.65rem', fontSize: '0.7rem' }}
+                              >
+                                Mark Paid
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                onClick={() => handleUpdateStatus(user.user_id, 'unpaid', 'pro')}
+                                isLoading={isUpdatingId === user.user_id}
+                                style={{ padding: '0.35rem 0.65rem', fontSize: '0.7rem', borderColor: 'var(--color-warning)', color: 'var(--color-warning)' }}
+                              >
+                                Mark Unpaid
+                              </Button>
+                            )}
+                            
+                            <Button
+                              variant="outline"
+                              onClick={() => handleTogglePlan(user.user_id, 'pro')}
+                              isLoading={isUpdatingId === user.user_id}
+                              style={{ padding: '0.35rem 0.65rem', fontSize: '0.7rem', borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}
+                            >
+                              Revoke Pro
+                            </Button>
+                          </>
+                        )}
+
+                        {/* Ban / Unban Button */}
+                        {user.status === 'banned' ? (
+                          <Button
+                            variant="outline"
+                            onClick={() => handleUpdateStatus(user.user_id, 'active')}
+                            isLoading={isUpdatingId === user.user_id}
+                            style={{ padding: '0.35rem 0.65rem', fontSize: '0.7rem' }}
+                          >
+                            Unban
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            onClick={() => handleUpdateStatus(user.user_id, 'banned')}
+                            isLoading={isUpdatingId === user.user_id}
+                            style={{ padding: '0.35rem 0.65rem', fontSize: '0.7rem', borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}
+                          >
+                            Ban
+                          </Button>
+                        )}
+
+                        {/* Edit Dates Button */}
+                        <Button
+                          variant="outline"
+                          onClick={() => handleOpenEditDates(user)}
+                          style={{ padding: '0.35rem 0.65rem', fontSize: '0.7rem', color: '#8b5cf6', borderColor: '#8b5cf6' }}
+                        >
+                          Dates
+                        </Button>
+
+                        {/* WhatsApp Reminder Button */}
+                        {(() => {
+                          const expiry = new Date(user.current_period_end);
+                          const now = new Date();
+                          const diffTime = expiry.getTime() - now.getTime();
+                          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                          const isExpiring = user.plan === 'pro' && (diffDays <= 3);
+                          
+                          if (isExpiring && user.businessPhone !== 'N/A') {
+                            return (
+                              <a
+                                href={getWhatsAppReminderLink(user)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-outline"
+                                style={{ 
+                                  padding: '0.35rem 0.65rem', 
+                                  fontSize: '0.7rem', 
+                                  borderColor: '#25D366', 
+                                  color: '#25D366',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  textDecoration: 'none'
+                                }}
+                              >
+                                Send Reminder
+                              </a>
+                            );
+                          }
+                          return null;
+                        })()}
+
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -706,6 +956,44 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
         )}
 
       </div>
+
+      {/* Date Editing Modal */}
+      <Modal
+        isOpen={!!editingSub}
+        onClose={() => setEditingSub(null)}
+        title="Edit Subscription Dates"
+      >
+        {editingSub && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+              Set custom subscription and expiry dates for <strong>{editingSub.businessName}</strong> ({editingSub.email}).
+            </p>
+            
+            <Input
+              label="Subscription Start Date"
+              type="date"
+              value={editStart}
+              onChange={(e) => setEditStart(e.target.value)}
+            />
+            
+            <Input
+              label="Subscription Expiry Date"
+              type="date"
+              value={editEnd}
+              onChange={(e) => setEditEnd(e.target.value)}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+              <Button variant="outline" onClick={() => setEditingSub(null)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveDates} isLoading={isUpdatingId === editingSub.user_id}>
+                Save Dates
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
 
     </div>
   );

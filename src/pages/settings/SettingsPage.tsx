@@ -128,7 +128,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           </div>
 
           <form onSubmit={handleUpdateBusiness}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 var(--space-md)' }}>
+            <div className="responsive-form-grid">
               <Input
                 label="Business Name *"
                 type="text"
@@ -155,7 +155,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <div style={{ gridColumn: 'span 2' }}>
+              <div className="col-span-2">
                 <Input
                   label="Physical Address"
                   type="text"
@@ -209,7 +209,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               Change the password for account: <strong>{userName}</strong>
             </p>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 var(--space-md)' }}>
+            <div className="responsive-form-grid">
               <Input
                 label="New Password"
                 type="password"

@@ -1653,3 +1653,24 @@ select.form-control {
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
+
+/* Responsive Form Grid for Profile & Settings */
+.responsive-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 var(--space-md);
+}
+
+.col-span-2 {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .responsive-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+  .col-span-2 {
+    grid-column: span 1 !important;
+  }
+}

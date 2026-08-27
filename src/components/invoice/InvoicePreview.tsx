@@ -46,14 +46,14 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
         {/* Header Block */}
         <div className="invoice-paper-header">
           <div>
-            {business.logo_url ? (
+            {business.logo_url && plan === 'pro' ? (
               <img 
                 src={business.logo_url} 
                 className="invoice-paper-logo" 
                 alt="Business Logo" 
               />
             ) : (
-              <h2 style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-heading)', margin: 0, textTransform: 'uppercase', letterSpacing: '-0.02em' }}>
+              <h2 style={{ color: '#09090b', fontFamily: 'var(--font-heading)', margin: 0, textTransform: 'uppercase', letterSpacing: '-0.02em', fontSize: '1.25rem', fontWeight: 800 }}>
                 {business.name || 'Your Business'}
               </h2>
             )}
@@ -146,8 +146,8 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
         </table>
 
         {/* Summary Footer */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginTop: 'auto' }}>
-          <div className="invoice-paper-notes" style={{ width: '60%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginTop: 'auto', borderTop: '1px solid #e7e5e4', paddingTop: 'var(--space-md)' }}>
+          <div className="invoice-paper-notes" style={{ width: '60%', borderTop: 'none', paddingTop: 0 }}>
             {notes && (
               <>
                 <h4 style={{ fontSize: '0.75rem', color: '#57534e', margin: '0 0 2px 0' }}>
@@ -160,7 +160,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
             )}
           </div>
 
-          <div className="invoice-paper-totals">
+          <div className="invoice-paper-totals" style={{ marginBottom: 0 }}>
             <div className="invoice-paper-totals-row" style={{ fontSize: '0.8rem', color: '#44403c' }}>
               <span>Subtotal:</span>
               <span>{currencySymbol} {subtotal.toLocaleString()}</span>
@@ -171,7 +171,7 @@ export const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                 <span>-{currencySymbol} {discount.toLocaleString()}</span>
               </div>
             )}
-            <div className="invoice-paper-totals-row grand-total">
+            <div className="invoice-paper-totals-row grand-total" style={{ borderTop: '1px solid #e7e5e4', marginTop: '4px' }}>
               <span>Grand Total:</span>
               <span>{currencySymbol} {total.toLocaleString()}</span>
             </div>

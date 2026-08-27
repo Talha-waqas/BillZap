@@ -427,6 +427,7 @@ function App() {
                 userName={userName}
                 onToast={triggerToast}
                 onNavigate={handleNavigate}
+                plan={subscription?.plan || 'free'}
               />
             )}
 
@@ -434,6 +435,7 @@ function App() {
               <InvoicesPage
                 business={business}
                 onToast={triggerToast}
+                plan={subscription?.plan || 'free'}
               />
             )}
 

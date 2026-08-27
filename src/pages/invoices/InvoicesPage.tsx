@@ -21,11 +21,13 @@ import { Modal } from '../../components/ui/Modal';
 interface InvoicesPageProps {
   business: Business;
   onToast: (msg: string, type: 'success' | 'error') => void;
+  plan?: 'free' | 'pro';
 }
 
 export const InvoicesPage: React.FC<InvoicesPageProps> = ({
   business,
   onToast,
+  plan = 'free',
 }) => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -80,7 +82,7 @@ export const InvoicesPage: React.FC<InvoicesPageProps> = ({
       <div id="invoice-paper-render" class="invoice-paper">
         <div class="invoice-paper-header">
           <div>
-            ${business.logo_url ? `<img src="${business.logo_url}" class="invoice-paper-logo" alt="Logo" />` : `<h2 style="color: var(--color-primary); font-family: 'Space Grotesk'">${business.name}</h2>`}
+            ${business.logo_url && plan === 'pro' ? `<img src="${business.logo_url}" class="invoice-paper-logo" alt="Logo" />` : `<h2 style="color: #09090b; font-family: 'Space Grotesk'; font-weight: 800; font-size: 1.25rem; text-transform: uppercase; margin: 0">${business.name}</h2>`}
             <p style="font-size: 0.8rem; margin-top: 4px; color: #57534e">${business.address || ''}</p>
             <p style="font-size: 0.8rem; color: #57534e">Phone: ${business.phone || ''} | Email: ${business.email || ''}</p>
           </div>
@@ -125,14 +127,14 @@ export const InvoicesPage: React.FC<InvoicesPageProps> = ({
           </tbody>
         </table>
 
-        <div style="display: flex; justify-content: space-between; align-items: start; margin-top: auto">
-          <div class="invoice-paper-notes" style="width: 60%">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-top: auto; border-top: 1px solid #e7e5e4; padding-top: var(--space-md)">
+          <div class="invoice-paper-notes" style="width: 60%; border-top: none; padding-top: 0">
             ${detailed.notes ? `
-              <h4 style="font-size: 0.75rem; color: #57534e; margin-bottom: 2px">Notes:</h4>
-              <p>${detailed.notes}</p>
+              <h4 style="font-size: 0.75rem; color: #57534e; margin-bottom: 2px">Terms & Notes:</h4>
+              <p style="font-size: 0.75rem; color: #57534e; margin: 0; white-space: pre-wrap">${detailed.notes}</p>
             ` : ''}
           </div>
-          <div class="invoice-paper-totals">
+          <div class="invoice-paper-totals" style="margin-bottom: 0">
             <div class="invoice-paper-totals-row">
               <span>Subtotal:</span>
               <span>${business.currency} ${detailed.subtotal.toLocaleString()}</span>
@@ -143,7 +145,7 @@ export const InvoicesPage: React.FC<InvoicesPageProps> = ({
                 <span>-${business.currency} ${detailed.discount.toLocaleString()}</span>
               </div>
             ` : ''}
-            <div class="invoice-paper-totals-row grand-total">
+            <div class="invoice-paper-totals-row grand-total" style="border-top: 1px solid #e7e5e4; margin-top: 4px">
               <span>Grand Total:</span>
               <span>${business.currency} ${detailed.total.toLocaleString()}</span>
             </div>
@@ -152,7 +154,9 @@ export const InvoicesPage: React.FC<InvoicesPageProps> = ({
 
         <div class="invoice-paper-footer">
           <p>Thank you for shopping with ${business.name}!</p>
-          <p style="font-size: 0.65rem; color: #a8a29e; margin-top: 4px">Generated via BillZap</p>
+          ${plan !== 'pro' ? `
+            <p style="font-size: 0.65rem; color: #a8a29e; margin-top: 4px">Generated via BillZap</p>
+          ` : ''}
         </div>
       </div>
     `;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from './lib/supabase/client';
+import { supabase, isSupabaseConfigured } from './lib/supabase/client';
 import { subscriptionService } from './services/subscriptionService';
 import { Business, Subscription } from './types';
 
@@ -116,16 +116,38 @@ function App() {
     };
   }, []);
 
-  // 3. Supabase Authentication listener
+  // 3. Supabase Authentication listener with connection timeout safety net
   useEffect(() => {
-    // Check initial session
+    if (!isSupabaseConfigured) {
+      setIsAppLoading(false);
+      return;
+    }
+
+    // Safety Net: Loader timeout fallback (5 seconds)
+    // If Supabase API hangs (e.g. database is paused or recovering), we release the loading block.
+    const fallbackTimer = setTimeout(() => {
+      setIsAppLoading((loading) => {
+        if (loading) {
+          console.warn("Supabase initial load timed out. Releasing loader fallback.");
+          triggerToast("Supabase connection is taking longer than usual. Please check if your database is restoring.", "error");
+          return false;
+        }
+        return loading;
+      });
+    }, 5000);
+
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      clearTimeout(fallbackTimer);
       setSession(initialSession);
       if (initialSession) {
         loadUserData(initialSession.user.id);
       } else {
         setIsAppLoading(false);
       }
+    }).catch(err => {
+      clearTimeout(fallbackTimer);
+      console.error("Session get failed:", err);
+      setIsAppLoading(false);
     });
 
     const { data: { subscription: authListener } } = supabase.auth.onAuthStateChange(
@@ -148,6 +170,7 @@ function App() {
     );
 
     return () => {
+      clearTimeout(fallbackTimer);
       authListener.unsubscribe();
     };
   }, []);

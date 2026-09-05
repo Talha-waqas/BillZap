@@ -290,24 +290,7 @@ export const BillingPage: React.FC<BillingPageProps> = ({
             Send Payment Proof via WhatsApp
           </Button>
 
-          <div style={{ 
-            borderTop: '1px dashed var(--border-color)', 
-            paddingTop: 'var(--space-sm)',
-            marginTop: 'var(--space-xs)',
-            textAlign: 'center'
-          }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: 'var(--space-xs)' }}>
-              Developer Sandbox Options:
-            </span>
-            <Button
-              onClick={handleUpgrade}
-              isLoading={isUpdating}
-              variant="outline"
-              style={{ width: '100%', padding: '0.5rem 1rem', fontSize: '0.85rem' }}
-            >
-              Simulate Instant Payment (For Testing)
-            </Button>
-          </div>
+
         </div>
       </Modal>
 

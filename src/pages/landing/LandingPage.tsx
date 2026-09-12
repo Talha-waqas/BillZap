@@ -614,6 +614,40 @@ export const LandingPage: React.FC = () => {
           </div>
 
         </div>
+
+        {/* Viral Referral Callout */}
+        <div style={{
+          maxWidth: '850px',
+          margin: 'var(--space-xl) auto 0 auto',
+          background: 'linear-gradient(135deg, rgba(37, 211, 102, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)',
+          border: '1px solid rgba(16, 185, 129, 0.3)',
+          borderRadius: 'var(--radius-lg)',
+          padding: 'var(--space-lg) var(--space-xl)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 'var(--space-md)'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <span style={{ backgroundColor: 'var(--color-primary)', color: '#09090b', fontWeight: 700, fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px' }}>
+                REFERRAL PROGRAM
+              </span>
+              <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Want Pro for Free?</h4>
+            </div>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+              Invite fellow business owners using your referral link. Refer <strong>3 Pro + 5 Free</strong> users and unlock <strong>3 Months (90 Days) of Free Pro</strong> automatically!
+            </p>
+          </div>
+          <button 
+            className="btn btn-primary"
+            onClick={() => window.location.hash = '#signup'}
+            style={{ fontSize: '0.85rem' }}
+          >
+            Join & Start Earning
+          </button>
+        </div>
       </section>
 
       {/* FAQ Section */}

@@ -10,6 +10,7 @@ import {
 import { invoiceService } from '../../services/invoiceService';
 import { customerService } from '../../services/customerService';
 import { subscriptionService } from '../../services/subscriptionService';
+import { referralService } from '../../services/referralService';
 import { calculateInvoiceTotals, validateInvoiceForm } from '../../lib/validation/invoice';
 import { Customer, Business, InvoiceItem, Invoice } from '../../types';
 import { Input } from '../ui/Input';
@@ -240,6 +241,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       } else {
         resultInvoice = await invoiceService.createInvoice(invoiceData);
         onToast('Invoice created successfully.', 'success');
+        
+        // Notify referral service for qualification check
+        referralService.notifyInvoiceCreated().catch(err => console.error('Referral check error:', err));
       }
 
       // Navigate to detailed view

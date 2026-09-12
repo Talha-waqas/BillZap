@@ -7,7 +7,8 @@ import {
   CreditCard, 
   LogOut,
   Zap,
-  ShieldAlert
+  ShieldAlert,
+  Gift
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase/client';
 
@@ -34,6 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: 'Dashboard', path: 'dashboard', icon: <LayoutDashboard size={18} /> },
     { label: 'Invoices', path: 'invoices', icon: <Receipt size={18} /> },
     { label: 'Customers', path: 'customers', icon: <Users size={18} /> },
+    { label: 'Refer & Earn', path: 'referrals', icon: <Gift size={18} /> },
     { label: 'Settings', path: 'settings', icon: <SettingsIcon size={18} /> },
     { label: 'Billing', path: 'billing', icon: <CreditCard size={18} /> },
   ];

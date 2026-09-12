@@ -8,12 +8,16 @@ import {
   LogIn, 
   Lock, 
   Mail, 
-  Receipt,
-  Search,
-  DollarSign
+  Receipt, 
+  Search, 
+  DollarSign,
+  Gift,
+  Ban,
+  AlertTriangle
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase/client';
 import { ADMIN_EMAILS } from '../../App';
+import { referralService } from '../../services/referralService';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Modal } from '../../components/ui/Modal';
@@ -29,14 +33,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // Tab state: 'pro_users' | 'free_users' | 'customers' | 'invoices'
-  const [activeTab, setActiveTab] = useState<'pro_users' | 'free_users' | 'customers' | 'invoices'>('pro_users');
+  // Tab state: 'pro_users' | 'free_users' | 'customers' | 'invoices' | 'referrals'
+  const [activeTab, setActiveTab] = useState<'pro_users' | 'free_users' | 'customers' | 'invoices' | 'referrals'>('pro_users');
 
   // Database states
   const [stats, setStats] = useState({ total: 0, free: 0, pro: 0, totalCustomers: 0, totalInvoices: 0, totalVolume: 0 });
   const [usersList, setUsersList] = useState<any[]>([]);
   const [customersList, setCustomersList] = useState<any[]>([]);
   const [invoicesList, setInvoicesList] = useState<any[]>([]);
+  const [referralsList, setReferralsList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingId, setIsUpdatingId] = useState<string | null>(null);
 
@@ -184,6 +189,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
       });
 
       setInvoicesList(combinedInvoices);
+
+      // 5. Fetch Referrals Directory
+      try {
+        const adminRefs = await referralService.getAdminReferrals();
+        setReferralsList(adminRefs);
+      } catch (errRef) {
+        console.error('Failed to load admin referrals:', errRef);
+      }
 
       // Calculate Statistics
       const total = combinedUsers.length;
@@ -347,6 +360,24 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
     }
   };
 
+  const handleRevokeReferral = async (referralId: string) => {
+    if (!window.confirm('Are you sure you want to flag and revoke this referral as fraudulent?')) return;
+    setIsUpdatingId(referralId);
+    try {
+      const ok = await referralService.revokeReferral(referralId);
+      if (ok) {
+        onToast('Referral marked as revoked/fraudulent.', 'success');
+        await loadAdminData();
+      } else {
+        onToast('Failed to revoke referral.', 'error');
+      }
+    } catch (e: any) {
+      onToast(e.message || 'Error revoking referral', 'error');
+    } finally {
+      setIsUpdatingId(null);
+    }
+  };
+
   // --- RENDERS ---
 
   // A. Logged Out View
@@ -477,6 +508,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
     i.invoice_number?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     i.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     i.sellerEmail?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredReferrals = referralsList.filter(r => 
+    r.referrer_business?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.referred_business?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.status?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -664,6 +701,24 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
           }}
         >
           Invoices Directory ({filteredInvoices.length})
+        </button>
+
+        <button 
+          onClick={() => { setActiveTab('referrals'); setSearchTerm(''); }}
+          style={{
+            padding: 'var(--space-sm) var(--space-md)',
+            background: 'none',
+            border: 'none',
+            color: activeTab === 'referrals' ? 'var(--color-primary)' : 'var(--text-secondary)',
+            borderBottom: activeTab === 'referrals' ? '2px solid var(--color-primary)' : '2px solid transparent',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'referrals' ? 600 : 400,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          <Gift size={16} /> Referrals & Rewards ({filteredReferrals.length})
         </button>
       </div>
 
@@ -974,6 +1029,105 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onToast, session }) => {
                     </td>
                     <td style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                       {new Date(inv.created_at).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
+
+        {/* Render Tab 4: Referrals */}
+        {activeTab === 'referrals' && (
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '850px' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+                <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Referrer (Invited By)</th>
+                <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Referred Business</th>
+                <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>First Invoice</th>
+                <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Plan Level</th>
+                <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Status</th>
+                <th style={{ padding: 'var(--space-md) var(--space-lg)' }}>Date</th>
+                <th style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredReferrals.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    No referral entries found.
+                  </td>
+                </tr>
+              ) : (
+                filteredReferrals.map((ref) => (
+                  <tr key={ref.id} style={{ borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
+                    <td style={{ padding: 'var(--space-md) var(--space-lg)', fontWeight: 500 }}>
+                      <div>{ref.referrer_business}</div>
+                      {ref.referrer_phone && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{ref.referrer_phone}</div>}
+                    </td>
+                    <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
+                      <div style={{ fontWeight: 500 }}>{ref.referred_business}</div>
+                      {ref.referred_phone && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{ref.referred_phone}</div>}
+                    </td>
+                    <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
+                      {ref.has_created_invoice ? (
+                        <span style={{ color: 'var(--color-success)', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Check size={14} /> Created
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>None Yet</span>
+                      )}
+                    </td>
+                    <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
+                      <span style={{
+                        padding: '2px 8px',
+                        borderRadius: '12px',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        backgroundColor: ref.plan_at_qualification === 'pro' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)',
+                        color: ref.plan_at_qualification === 'pro' ? 'var(--color-success)' : 'var(--text-secondary)'
+                      }}>
+                        {(ref.plan_at_qualification || 'FREE').toUpperCase()}
+                      </span>
+                    </td>
+                    <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
+                      <span style={{
+                        padding: '2px 8px',
+                        borderRadius: '12px',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        backgroundColor: ref.status === 'reward_counted' ? 'rgba(16, 185, 129, 0.15)' : ref.status.startsWith('qualified') ? 'rgba(59, 130, 246, 0.15)' : ref.status === 'revoked' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255,255,255,0.05)',
+                        color: ref.status === 'reward_counted' ? 'var(--color-success)' : ref.status.startsWith('qualified') ? '#60a5fa' : ref.status === 'revoked' ? 'var(--color-danger)' : 'var(--text-secondary)'
+                      }}>
+                        {ref.status.replace('_', ' ').toUpperCase()}
+                      </span>
+                    </td>
+                    <td style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                      {new Date(ref.created_at).toLocaleDateString()}
+                    </td>
+                    <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'right' }}>
+                      {ref.status !== 'revoked' ? (
+                        <button
+                          onClick={() => handleRevokeReferral(ref.id)}
+                          disabled={isUpdatingId === ref.id}
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: '1px solid rgba(239, 68, 68, 0.2)',
+                            color: '#ef4444',
+                            padding: '4px 10px',
+                            borderRadius: 'var(--radius-sm)',
+                            cursor: 'pointer',
+                            fontSize: '0.75rem',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <Ban size={12} /> Revoke / Fraud
+                        </button>
+                      ) : (
+                        <span style={{ fontSize: '0.75rem', color: 'var(--color-danger)', fontWeight: 500 }}>Revoked</span>
+                      )}
                     </td>
                   </tr>
                 ))

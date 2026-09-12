@@ -23,6 +23,7 @@ import { CustomerDetailPage } from './pages/customers/CustomerDetailPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
 import { BillingPage } from './pages/billing/BillingPage';
 import { AdminPage } from './pages/admin/AdminPage';
+import { ReferralsPage } from './pages/referrals/ReferralsPage';
 
 export const ADMIN_EMAILS = ['talhawaqasofficial@gmail.com', 'talha.dev@nayapay', 'admin@billzap.com'];
 
@@ -49,6 +50,7 @@ type Route =
   | { name: 'customer-detail'; id: string }
   | { name: 'settings' }
   | { name: 'billing' }
+  | { name: 'referrals' }
   | { name: 'admin' };
 
 function parseLocation(): Route {
@@ -75,6 +77,7 @@ function parseLocation(): Route {
     case 'customer-detail': return { name: 'customer-detail', id };
     case 'settings': return { name: 'settings' };
     case 'billing': return { name: 'billing' };
+    case 'referrals': return { name: 'referrals' };
     case 'admin': return { name: 'admin' };
     default: return { name: 'landing' };
   }
@@ -366,6 +369,7 @@ function App() {
       case 'customer-detail': return 'Customer Profile';
       case 'settings': return 'Settings';
       case 'billing': return 'Subscription & Billing';
+      case 'referrals': return 'Refer & Earn (3 Months Free Pro)';
       default: return '';
     }
   };
@@ -497,6 +501,14 @@ function App() {
                 subscription={subscription}
                 onSubscriptionUpdate={(updated) => setSubscription(updated)}
                 onToast={triggerToast}
+              />
+            )}
+
+            {route.name === 'referrals' && business && (
+              <ReferralsPage
+                business={business}
+                onToast={triggerToast}
+                onNavigate={handleNavigate}
               />
             )}
 

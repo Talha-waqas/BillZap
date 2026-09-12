@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase/client';
+import { referralService } from '../../services/referralService';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
-import { Zap } from 'lucide-react';
+import { Zap, Gift } from 'lucide-react';
 
 interface SignUpPageProps {
   onToast: (msg: string, type: 'success' | 'error') => void;
@@ -13,8 +14,27 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onToast }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [referralCode, setReferralCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Extract ?ref= from hash or search query
+  useEffect(() => {
+    try {
+      const searchParams = new URLSearchParams(window.location.search);
+      let ref = searchParams.get('ref');
+      if (!ref && window.location.hash.includes('?')) {
+        const hashQuery = window.location.hash.split('?')[1];
+        const hashParams = new URLSearchParams(hashQuery);
+        ref = hashParams.get('ref');
+      }
+      if (ref) {
+        setReferralCode(ref.trim().toUpperCase());
+      }
+    } catch (e) {
+      console.error('Error parsing referral code:', e);
+    }
+  }, []);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,26 +56,38 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onToast }) => {
     setIsLoading(true);
     setError('');
 
-    const { error: authError } = await supabase.auth.signUp({
+    const cleanRef = referralCode.trim().toUpperCase();
+
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           full_name: name,
+          referral_code: cleanRef || undefined,
         },
       },
     });
 
-    setIsLoading(false);
-
     if (authError) {
+      setIsLoading(false);
       setError(authError.message);
       onToast(authError.message, 'error');
-    } else {
-      onToast('Account created successfully! Check your email if validation is required, or proceed to log in.', 'success');
-      // Supabase defaults to auto-sign-in on signup. If session starts, redirect occurs in App.tsx
-      window.location.hash = '#onboarding';
+      return;
     }
+
+    // If signup succeeded and a referral code was provided, link in referral service
+    if (authData?.user && cleanRef) {
+      try {
+        await referralService.linkReferredUser(authData.user.id, cleanRef);
+      } catch (err) {
+        console.error('Failed to link referral:', err);
+      }
+    }
+
+    setIsLoading(false);
+    onToast('Account created successfully! Check your email if validation is required, or proceed to log in.', 'success');
+    window.location.hash = '#onboarding';
   };
 
   return (
@@ -120,6 +152,22 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onToast }) => {
             disabled={isLoading}
             required
           />
+
+          <div style={{ marginTop: 'var(--space-2xs)' }}>
+            <Input
+              label="Referral Code (Optional)"
+              type="text"
+              placeholder="e.g. BZ9X4Y"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+              disabled={isLoading}
+            />
+            {referralCode && (
+              <p style={{ fontSize: '0.75rem', color: 'var(--color-primary)', marginTop: '-8px', marginBottom: 'var(--space-xs)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Gift size={12} /> Referral code applied!
+              </p>
+            )}
+          </div>
 
           <Button 
             type="submit" 

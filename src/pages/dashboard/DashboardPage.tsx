@@ -8,7 +8,8 @@ import {
   Eye, 
   Download, 
   Send,
-  Loader
+  Loader,
+  Gift
 } from 'lucide-react';
 import { invoiceService } from '../../services/invoiceService';
 import { downloadInvoicePDF } from '../../lib/pdf/generator';
@@ -259,6 +260,64 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           }}
         >
           Create Invoice
+        </Button>
+      </div>
+
+      {/* Referral & Rewards Highlight Banner */}
+      <div 
+        onClick={() => onNavigate('referrals')}
+        style={{
+          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(59, 130, 246, 0.06) 100%)',
+          border: '1px solid rgba(16, 185, 129, 0.25)',
+          borderRadius: 'var(--radius-lg)',
+          padding: 'var(--space-md) var(--space-lg)',
+          marginBottom: 'var(--space-xl)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: 'pointer',
+          transition: 'transform 150ms ease, border-color 150ms ease',
+          flexWrap: 'wrap',
+          gap: 'var(--space-md)'
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--color-primary)')}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.25)')}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+          <div style={{
+            width: '42px',
+            height: '42px',
+            borderRadius: 'var(--radius-round)',
+            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+            color: 'var(--color-primary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0
+          }}>
+            <Gift size={20} />
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                Invite Business Owners. Earn 3 Months of Free Pro!
+              </span>
+              <span style={{ fontSize: '0.7rem', backgroundColor: 'var(--color-primary)', color: '#09090b', fontWeight: 700, padding: '1px 6px', borderRadius: '8px' }}>
+                90 DAYS FREE
+              </span>
+            </div>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              3 Pro + 5 Free qualified referrals = 90 Days of Pro unlocked. Click to view your unique link & progress →
+            </span>
+          </div>
+        </div>
+
+        <Button 
+          size="sm" 
+          variant="outline" 
+          style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)', pointerEvents: 'none' }}
+        >
+          View Progress
         </Button>
       </div>
 

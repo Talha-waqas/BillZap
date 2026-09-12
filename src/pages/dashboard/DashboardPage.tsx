@@ -313,9 +313,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
 
         <Button 
-          size="sm" 
           variant="outline" 
-          style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)', pointerEvents: 'none' }}
+          style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)', pointerEvents: 'none', padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
         >
           View Progress
         </Button>

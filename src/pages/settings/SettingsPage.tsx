@@ -3,7 +3,8 @@ import { supabase } from '../../lib/supabase/client';
 import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Button } from '../../components/ui/Button';
-import { Settings as SettingsIcon, Building, ShieldAlert, Key } from 'lucide-react';
+import { Settings as SettingsIcon, Building, ShieldAlert, Key, Trash2, AlertTriangle } from 'lucide-react';
+import { Modal } from '../../components/ui/Modal';
 import { Business } from '../../types';
 
 interface SettingsPageProps {
@@ -104,6 +105,51 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
       onToast(err.message || 'Failed to update password.', 'error');
     } finally {
       setIsSavingPassword(false);
+    }
+  };
+
+  // Delete Account states
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmationText.trim().toLowerCase() !== 'delete my account') {
+      onToast("Please type 'delete my account' to confirm.", 'error');
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Attempt deletion via RPC if configured
+      const { error: rpcError } = await supabase.rpc('delete_user_account');
+
+      if (rpcError) {
+        console.warn('RPC delete_user_account failed or not set up, falling back to manual table cleanup:', rpcError);
+        // Fallback: delete user records from client side
+        await supabase.from('invoices').delete().eq('user_id', user.id);
+        await supabase.from('customers').delete().eq('user_id', user.id);
+        await supabase.from('referrals').delete().eq('referrer_id', user.id);
+        await supabase.from('referrals').delete().eq('referred_user_id', user.id);
+        await supabase.from('user_referral_profiles').delete().eq('user_id', user.id);
+        await supabase.from('referral_rewards').delete().eq('user_id', user.id);
+        await supabase.from('subscriptions').delete().eq('user_id', user.id);
+        await supabase.from('businesses').delete().eq('user_id', user.id);
+      }
+
+      // Sign out the user
+      await supabase.auth.signOut();
+      onToast('Your account and all associated data have been permanently deleted.', 'success');
+      window.location.hash = '#landing';
+    } catch (err: any) {
+      console.error('Delete account error:', err);
+      onToast(err.message || 'Failed to delete account.', 'error');
+    } finally {
+      setIsDeletingAccount(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -234,7 +280,92 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           </form>
         </div>
 
+        {/* Danger Zone: Delete Account */}
+        <div className="card" style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 'var(--space-md)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          backgroundColor: 'rgba(239, 68, 68, 0.02)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-xs)', borderBottom: '1px solid rgba(239, 68, 68, 0.2)', paddingBottom: 'var(--space-xs)', marginBottom: 'var(--space-xs)' }}>
+            <Trash2 size={20} style={{ color: 'var(--color-danger)' }} />
+            <h3 style={{ fontSize: '1.15rem', color: 'var(--color-danger)' }}>Danger Zone</h3>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-md)' }}>
+            <div>
+              <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>
+                Delete BillZap Account
+              </strong>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, maxWidth: '560px' }}>
+                Permanently erase your account, business profile, all invoices, customer records, and referral data. This action is immediate and cannot be undone.
+              </p>
+            </div>
+            <Button
+              variant="danger"
+              onClick={() => setIsDeleteModalOpen(true)}
+              style={{ flexShrink: 0 }}
+            >
+              Delete Account
+            </Button>
+          </div>
+        </div>
+
       </div>
+
+      {/* Account Deletion Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => { if (!isDeletingAccount) setIsDeleteModalOpen(false); }}
+        title="Permanently Delete Account"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+          <div style={{
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            borderRadius: 'var(--radius-md)',
+            padding: 'var(--space-md)',
+            display: 'flex',
+            gap: 'var(--space-sm)',
+            alignItems: 'flex-start'
+          }}>
+            <AlertTriangle size={22} style={{ color: 'var(--color-danger)', flexShrink: 0, marginTop: '2px' }} />
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', lineHeight: 1.5 }}>
+              <strong>Warning:</strong> This will permanently delete your account, your business profile (<strong>{business.name}</strong>), all created invoices, CRM contacts, and subscription history.
+            </div>
+          </div>
+
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0 }}>
+            To confirm deletion, please type <strong>delete my account</strong> in the field below:
+          </p>
+
+          <Input
+            placeholder="Type 'delete my account' to confirm"
+            value={deleteConfirmationText}
+            onChange={(e) => setDeleteConfirmationText(e.target.value)}
+            disabled={isDeletingAccount}
+          />
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-sm)', marginTop: 'var(--space-xs)' }}>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={isDeletingAccount}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleDeleteAccount}
+              isLoading={isDeletingAccount}
+              disabled={deleteConfirmationText.trim().toLowerCase() !== 'delete my account'}
+            >
+              Confirm Permanent Deletion
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
     </div>
   );

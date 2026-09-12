@@ -626,3 +626,21 @@ $$ language plpgsql security definer;
 create or replace trigger tr_referral_on_subscription_update
   after update on public.subscriptions
   for each row execute procedure public.handle_referral_on_subscription_update();
+
+-- =========================================================================
+-- FUNCTION: delete_user_account
+-- Allows authenticated user to permanently delete their account and data
+-- =========================================================================
+create or replace function public.delete_user_account()
+returns void as $$
+declare
+  v_uid uuid := auth.uid();
+begin
+  if v_uid is null then
+    raise exception 'Not authenticated';
+  end if;
+
+  -- Delete from auth.users (cascades to businesses, customers, invoices, subscriptions, referrals)
+  delete from auth.users where id = v_uid;
+end;
+$$ language plpgsql security definer;
